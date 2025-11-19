@@ -1,0 +1,55 @@
+name: Deploy Prism Console
+
+on:
+  push:
+    branches: [dev, staging, main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    env:
+      NODE_VERSION: '20'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build
+        run: npm run build
+
+      - name: Select Railway environment
+        run: |
+          BRANCH=${GITHUB_REF##*/}
+          if [ "$BRANCH" = "main" ]; then
+            echo "RAILWAY_ENV=prod" >> $GITHUB_ENV
+            echo "CONSOLE_URL=https://console.blackroad.systems" >> $GITHUB_ENV
+          elif [ "$BRANCH" = "staging" ]; then
+            echo "RAILWAY_ENV=staging" >> $GITHUB_ENV
+            echo "CONSOLE_URL=https://staging.console.blackroad.systems" >> $GITHUB_ENV
+          else
+            echo "RAILWAY_ENV=dev" >> $GITHUB_ENV
+            echo "CONSOLE_URL=${DEV_CONSOLE_URL:-""}" >> $GITHUB_ENV
+          fi
+
+      - name: Deploy to Railway
+        uses: railwayapp/railway-action@v2
+        with:
+          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
+          service: prism-console-web
+          environment: ${{ env.RAILWAY_ENV }}
+
+      - name: Health check
+        run: |
+          if [ -z "$CONSOLE_URL" ]; then
+            echo "CONSOLE_URL is not set for this environment" >&2
+            exit 1
+          fi
+          curl --fail --location "$CONSOLE_URL/health"
