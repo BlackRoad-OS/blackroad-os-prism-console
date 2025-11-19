@@ -37,6 +37,7 @@ jobs:
           else
             echo "RAILWAY_ENV=dev" >> $GITHUB_ENV
             echo "CONSOLE_URL=${DEV_CONSOLE_URL:-""}" >> $GITHUB_ENV
+            echo "SKIP_HEALTH_CHECK=$([ -z "${DEV_CONSOLE_URL:-}" ] && echo true || echo false)" >> $GITHUB_ENV
           fi
 
       - name: Deploy to Railway
@@ -48,6 +49,10 @@ jobs:
 
       - name: Health check
         run: |
+          if [ "${SKIP_HEALTH_CHECK:-false}" = "true" ]; then
+            echo "Skipping health check because CONSOLE_URL is not configured for dev deployments"
+            exit 0
+          fi
           if [ -z "$CONSOLE_URL" ]; then
             echo "CONSOLE_URL is not set for this environment" >&2
             exit 1
