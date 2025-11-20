@@ -5,6 +5,8 @@ type ReadEnvOptions = {
   defaultValue?: string;
 };
 
+type ServiceKey = 'console' | 'core' | 'agents';
+
 const nodeEnvRaw = (process.env.NODE_ENV || 'development') as string;
 const environment: RuntimeEnvironment =
   nodeEnvRaw === 'production' ? 'production' : nodeEnvRaw === 'staging' ? 'staging' : 'development';
@@ -26,7 +28,7 @@ function readEnv(variable: string, { optional, defaultValue }: ReadEnvOptions = 
   return value ?? '';
 }
 
-export const config = {
+export const serverConfig = {
   environment,
   nodeEnv: environment,
   coreApiUrl: readEnv('CORE_API_URL', { optional: isDev }),
@@ -45,28 +47,110 @@ export const config = {
 
 export const publicConfig = {
   environment,
-  consoleUrl: readEnv('NEXT_PUBLIC_CONSOLE_URL', { optional: isDev }),
-  coreApiUrl: readEnv('NEXT_PUBLIC_CORE_API_URL', { optional: isDev }),
-  agentsApiUrl: readEnv('NEXT_PUBLIC_AGENTS_API_URL', { optional: isDev })
+  consoleUrl: readEnv('PUBLIC_CONSOLE_URL', { optional: true }),
+  coreApiUrl: readEnv('NEXT_PUBLIC_CORE_API_URL', { optional: true }),
+  agentsApiUrl: readEnv('NEXT_PUBLIC_AGENTS_API_URL', { optional: true })
 };
 
-export type ServiceHealth = {
+export type ServiceDescriptor = {
+  key: ServiceKey;
   name: string;
   url: string;
   configured: boolean;
 };
 
-export function getStaticServiceHealth(): ServiceHealth[] {
-  return [
-    {
-      name: 'Core API',
-      url: publicConfig.coreApiUrl || config.coreApiUrl,
-      configured: Boolean(publicConfig.coreApiUrl || config.coreApiUrl)
-    },
-    {
-      name: 'Agents API',
-      url: publicConfig.agentsApiUrl || config.agentsApiUrl,
-      configured: Boolean(publicConfig.agentsApiUrl || config.agentsApiUrl)
+export type ServiceStatus = ServiceDescriptor & {
+  status: 'healthy' | 'unreachable' | 'not_configured';
+  latencyMs?: number;
+  error?: string;
+};
+
+const serviceCatalog: Record<ServiceKey, { name: string }> = {
+  console: { name: 'Operator Console' },
+  core: { name: 'Core API' },
+  agents: { name: 'Agents API' }
+};
+
+function resolveServiceUrl(key: ServiceKey, preferPublic = true): string {
+  if (key === 'console') {
+    return preferPublic ? publicConfig.consoleUrl || serverConfig.consoleUrl : serverConfig.consoleUrl || publicConfig.consoleUrl;
+  }
+
+  if (key === 'core') {
+    return preferPublic ? publicConfig.coreApiUrl || serverConfig.coreApiUrl : serverConfig.coreApiUrl || publicConfig.coreApiUrl;
+  }
+
+  return preferPublic ? publicConfig.agentsApiUrl || serverConfig.agentsApiUrl : serverConfig.agentsApiUrl || publicConfig.agentsApiUrl;
+}
+
+export function getStaticServiceHealth(preferPublic = true): ServiceDescriptor[] {
+  return (Object.keys(serviceCatalog) as ServiceKey[]).map((key) => {
+    const url = resolveServiceUrl(key, preferPublic);
+    return {
+      key,
+      name: serviceCatalog[key].name,
+      url,
+      configured: Boolean(url)
+    };
+  });
+}
+
+function withHealthPath(url: string): string {
+  if (!url) return '';
+  try {
+    const normalized = url.endsWith('/') ? url.slice(0, -1) : url;
+    const target = new URL(normalized);
+    target.pathname = target.pathname.endsWith('/health') ? target.pathname : `${target.pathname || ''}/health`;
+    return target.toString();
+  } catch (error) {
+    return url;
+  }
+}
+
+export async function pollServiceHealth(timeoutMs = 2500): Promise<ServiceStatus[]> {
+  const controller = new AbortController();
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
+
+  const checks = getStaticServiceHealth(false).map(async (service) => {
+    if (!service.configured) {
+      return { ...service, status: 'not_configured' as const } satisfies ServiceStatus;
     }
-  ];
+
+    const healthUrl = withHealthPath(service.url);
+    const started = performance.now();
+
+    try {
+      const response = await fetch(healthUrl, {
+        method: 'GET',
+        cache: 'no-store',
+        signal: controller.signal
+      });
+      const latencyMs = Math.round(performance.now() - started);
+
+      if (!response.ok) {
+        return {
+          ...service,
+          status: 'unreachable',
+          latencyMs,
+          error: `HTTP ${response.status}`
+        } satisfies ServiceStatus;
+      }
+
+      return {
+        ...service,
+        status: 'healthy',
+        latencyMs
+      } satisfies ServiceStatus;
+    } catch (error) {
+      return {
+        ...service,
+        status: 'unreachable',
+        error: error instanceof Error ? error.message : 'unknown error'
+      } satisfies ServiceStatus;
+    }
+  });
+
+  const results = await Promise.all(checks);
+  clearTimeout(timeout);
+  return results;
 }

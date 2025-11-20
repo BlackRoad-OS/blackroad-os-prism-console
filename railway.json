@@ -8,15 +8,14 @@
       "port": 3000,
       "buildCommand": "npm run build",
       "startCommand": "npm run start",
+      "healthcheckPath": "/api/health",
       "envVariables": {
         "NODE_ENV": "production",
         "CORE_API_URL": "",
         "AGENTS_API_URL": "",
         "PUBLIC_CONSOLE_URL": "",
         "NEXT_PUBLIC_CORE_API_URL": "",
-        "NEXT_PUBLIC_AGENTS_API_URL": "",
-        "NEXT_PUBLIC_CONSOLE_URL": "",
-        "DATABASE_URL": ""
+        "NEXT_PUBLIC_AGENTS_API_URL": ""
       }
     }
   ]

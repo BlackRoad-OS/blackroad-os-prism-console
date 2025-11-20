@@ -1,75 +1,47 @@
 # BlackRoad OS — Prism Console
 
-## Short Description
+Operator console UI for BlackRoad OS built with Next.js (App Router + TypeScript).
 
-Admin console for deployments, observability, environments, and system control.
+## Running locally
 
-## Long Description
+1. Install dependencies: `npm ci`
+2. Set environment variables (see below). You can use a `.env.local` file for local development.
+3. Start the dev server: `npm run dev`
+4. Visit `http://localhost:3000` to load the console.
 
-Prism Console is the command center of BlackRoad OS. It exposes environment controls, deployment dashboards, worker health, agent supervision, configuration management, secrets overview (abstracted), and unified observability tools. It serves founders, engineers, and operators.
+## Key routes
 
-## Structured Table
+- `/` — Overview of configured upstream endpoints.
+- `/status` — Live health table that polls each configured `/health` endpoint.
+- `/health` — UI that consumes the `/api/health` JSON endpoint and shows service badges.
+- `/agents` — Lists agents via `AGENTS_API_URL/agents` and triggers `AGENTS_API_URL/agents/run` through internal API proxies.
+- `/api/health` and `/api/version` — Machine-friendly health and version metadata.
 
-| Field | Value |
+## Configuration
+
+Environment variables are centralized in `src/lib/config.ts`. Server-side values stay private; `NEXT_PUBLIC_*` values are exposed to the browser.
+
+| Variable | Purpose |
 | --- | --- |
-| **Purpose** | Admin, ops, observability, environments |
-| **Depends On** | API Gateway, Operator Engine |
-| **Used By** | Founders, devs, ops |
-| **Owner** | Alexa + Cece (Prism Operations Group) |
-| **Status** | Active — mission critical |
+| `NODE_ENV` | Runtime environment selector (`development` \| `staging` \| `production`). |
+| `CORE_API_URL` | Server-side Core API base URL used for backend calls. |
+| `AGENTS_API_URL` | Server-side Agents API base URL for listing/running agents. |
+| `PUBLIC_CONSOLE_URL` | Public URL for this console; also used for the operator badge. |
+| `NEXT_PUBLIC_CORE_API_URL` | Browser-safe Core API base URL (if direct browser calls are allowed). |
+| `NEXT_PUBLIC_AGENTS_API_URL` | Browser-safe Agents API base URL (if direct browser calls are allowed). |
+| `SKIP_ENV_VALIDATION` | Optional; set to `true` in dev to bypass strict env checks. |
 
-## Roadmap Board (Prism)
+> Keep sensitive URLs in server-side vars (`CORE_API_URL`, `AGENTS_API_URL`). Only expose endpoints in `NEXT_PUBLIC_*` if they are safe for the browser.
 
-Columns:
+## Wiring to backend services
 
-- Backlog
-- UI Wireframing
-- Integration Layer
-- Telemetry
-- Review
-- Prod Ready
-
-Sample tasks:
-
-- Agent lifecycle dashboard
-- Deployment monitor
-- Worker queue timeline
-- Error heatmaps
-- Rail & Cloudflare integrated view
+- Health polling: `/api/health` calls each configured service and appends `/health` to the base URL. `/status` renders the live results.
+- Version metadata: `/api/version` (and `/version`) returns the build version, environment, and timestamp.
+- Agents: `/api/agents` proxies `GET {AGENTS_API_URL}/agents`; `/api/agents/run` proxies `POST {AGENTS_API_URL}/agents/run`. The `/agents` page consumes these endpoints.
 
 ## Deployment
 
-Prism Console deploys to the Railway project **`blackroad-prism-console`** as the service **`prism-console-web`**. It fronts environments published via Cloudflare:
+- Railway service: `prism-console-web` defined in `railway.json` (build `npm run build`, start `npm run start`, health check `/api/health`).
+- GitHub Actions: `.github/workflows/console-deploy.yaml` installs dependencies, runs lint+build, deploys to the correct Railway environment (`dev`/`staging`/`prod`), and performs a post-deploy health check.
 
-- **Production:** `https://console.blackroad.systems`
-- **Staging:** `https://staging.console.blackroad.systems`
-- **Dev:** Railway-provided dev URL (optionally `https://dev.console.blackroad.systems`)
-
-### Runtime commands
-
-- Install: `npm ci`
-- Build: `npm run build`
-- Start: `npm run start`
-
-### Environment variables
-
-| Variable | Purpose | Prod | Staging | Dev |
-| --- | --- | --- | --- | --- |
-| `NODE_ENV` | Runtime environment | `production` | `staging` | `development` |
-| `CORE_API_URL` | Core backend base URL | `https://core.blackroad.systems` | `https://staging.core.blackroad.systems` | Core dev Railway URL |
-| `AGENTS_API_URL` | Agents API base URL | `https://agents.blackroad.systems` | `https://staging.agents.blackroad.systems` | Agents dev Railway URL |
-| `PUBLIC_CONSOLE_URL` | Console base URL | `https://console.blackroad.systems` | `https://staging.console.blackroad.systems` | Dev console URL |
-| `NEXT_PUBLIC_CORE_API_URL` | Browser-safe core URL | `https://core.blackroad.systems` | `https://staging.core.blackroad.systems` | Core dev Railway URL |
-| `NEXT_PUBLIC_AGENTS_API_URL` | Browser-safe agents URL | `https://agents.blackroad.systems` | `https://staging.agents.blackroad.systems` | Agents dev Railway URL |
-| `NEXT_PUBLIC_CONSOLE_URL` | Browser-safe console URL | `https://console.blackroad.systems` | `https://staging.console.blackroad.systems` | Dev console URL |
-| `DATABASE_URL` | (Optional) Metrics DB connection string | as provisioned | as provisioned | as provisioned |
-| `SKIP_ENV_VALIDATION` | (Optional) Set to `true` to bypass env enforcement during local builds | optional | optional | `true` (in build script) |
-
-### Health and status
-
-- `GET /health` — lightweight liveness JSON suitable for Railway checks.
-- `GET /status` — static status board that surfaces configured backend URLs; ready to wire to real health endpoints later.
-
-### Railway definition
-
-`railway.json` declares the project + service so `railway up` deploys with the right commands and port. Set `RAILWAY_TOKEN` in CI/CD and provide the above env vars per environment before deploying.
+Production and staging URLs remain `https://console.blackroad.systems` and `https://staging.console.blackroad.systems`; dev uses the Railway-provided URL (or `DEV_CONSOLE_URL` in CI for health checks).

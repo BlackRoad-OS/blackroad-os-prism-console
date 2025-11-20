@@ -1,4 +1,4 @@
-import { config } from './config';
+import { serverConfig } from './config';
 
 type FetchTarget = 'core' | 'agents';
 
@@ -9,8 +9,8 @@ type ApiClientOptions = {
 };
 
 const baseMap: Record<FetchTarget, string> = {
-  core: config.coreApiUrl,
-  agents: config.agentsApiUrl
+  core: serverConfig.coreApiUrl,
+  agents: serverConfig.agentsApiUrl
 };
 
 /**
