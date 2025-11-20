@@ -1,19 +1,22 @@
-import { getStaticServiceHealth, publicConfig } from '@/lib/config';
+import { pollServiceHealth, publicConfig } from '@/lib/config';
 import { StatusCard } from '@/components/status/StatusCard';
 
 export const metadata = {
   title: 'System Status | Prism Console'
 };
 
-export default function StatusPage() {
-  const services = getStaticServiceHealth();
+export const revalidate = 0;
+export const dynamic = 'force-dynamic';
+
+export default async function StatusPage() {
+  const services = await pollServiceHealth();
   const env = publicConfig.environment;
 
   return (
     <div className="grid">
       <StatusCard
         title="Prism Console"
-        description="Static overview of configured upstream services. Replace mock health with live pings when endpoints are ready."
+        description="Live health from upstream services. Polls /health for each configured endpoint."
         environment={env}
         services={services}
       />

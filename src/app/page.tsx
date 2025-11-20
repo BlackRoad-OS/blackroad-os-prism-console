@@ -1,4 +1,4 @@
-import { config, getStaticServiceHealth, publicConfig } from '@/lib/config';
+import { getStaticServiceHealth, publicConfig, serverConfig } from '@/lib/config';
 
 const cards = [
   { title: 'Core API', key: 'coreApiUrl', description: 'Primary backend for Prism data.' },
@@ -9,9 +9,9 @@ const cards = [
 export default function Home() {
   const serviceHealth = getStaticServiceHealth();
   const resolvedValues = {
-    coreApiUrl: publicConfig.coreApiUrl || config.coreApiUrl,
-    agentsApiUrl: publicConfig.agentsApiUrl || config.agentsApiUrl,
-    consoleUrl: publicConfig.consoleUrl || config.consoleUrl
+    coreApiUrl: publicConfig.coreApiUrl || serverConfig.coreApiUrl,
+    agentsApiUrl: publicConfig.agentsApiUrl || serverConfig.agentsApiUrl,
+    consoleUrl: publicConfig.consoleUrl || serverConfig.consoleUrl
   } as const;
 
   return (
@@ -19,15 +19,13 @@ export default function Home() {
       <div className="card">
         <h3>Environment</h3>
         <p className="muted">Aligns with Railway and Cloudflare mapping.</p>
-        <div className="badge">{config.environment}</div>
+        <div className="badge">{serverConfig.environment}</div>
         <table className="table">
           <tbody>
             {cards.map((card) => (
               <tr key={card.key}>
                 <td>{card.title}</td>
-                <td className="muted">
-                  {resolvedValues[card.key] || 'not set'}
-                </td>
+                <td className="muted">{resolvedValues[card.key] || 'not set'}</td>
               </tr>
             ))}
           </tbody>
@@ -42,7 +40,7 @@ export default function Home() {
         <p className="muted">Configuration-based readiness of upstream services.</p>
         <ul>
           {serviceHealth.map((service) => (
-            <li key={service.name}>
+            <li key={service.key}>
               {service.name}:{' '}
               <span className={service.configured ? 'status-ok' : 'status-bad'}>
                 {service.configured ? 'Configured' : 'Missing'}
@@ -58,7 +56,7 @@ export default function Home() {
         <ul>
           <li>Use /status for a focused service status board.</li>
           <li>Centralized fetch helper lives in <code>src/lib/api.ts</code>.</li>
-          <li>Health endpoint: <code>/health</code>.</li>
+          <li>Health endpoint: <code>/api/health</code>.</li>
         </ul>
       </div>
     </div>

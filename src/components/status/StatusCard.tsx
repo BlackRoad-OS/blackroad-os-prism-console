@@ -1,11 +1,17 @@
-import { ServiceHealth } from '@/lib/config';
+import { ServiceStatus } from '@/lib/config';
 
 export type StatusCardProps = {
   title: string;
   description?: string;
   environment: string;
-  services: ServiceHealth[];
+  services: ServiceStatus[];
 };
+
+function statusLabel(status: ServiceStatus['status']) {
+  if (status === 'healthy') return 'status-ok';
+  if (status === 'not_configured') return 'status-bad';
+  return 'status-bad';
+}
 
 export function StatusCard({ title, description, environment, services }: StatusCardProps) {
   return (
@@ -21,6 +27,7 @@ export function StatusCard({ title, description, environment, services }: Status
             <th>Service</th>
             <th>URL</th>
             <th>Status</th>
+            <th>Latency</th>
           </tr>
         </thead>
         <tbody>
@@ -28,9 +35,12 @@ export function StatusCard({ title, description, environment, services }: Status
             <tr key={service.name}>
               <td>{service.name}</td>
               <td className="muted">{service.url || 'not set'}</td>
-              <td className={service.configured ? 'status-ok' : 'status-bad'}>
-                {service.configured ? 'Configured' : 'Missing'}
+              <td className={statusLabel(service.status)}>
+                {service.status === 'healthy' && 'Healthy'}
+                {service.status === 'not_configured' && 'Not configured'}
+                {service.status === 'unreachable' && 'Unreachable'}
               </td>
+              <td className="muted">{service.latencyMs ? `${service.latencyMs} ms` : '—'}</td>
             </tr>
           ))}
         </tbody>

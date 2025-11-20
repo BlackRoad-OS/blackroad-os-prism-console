@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ReactNode } from 'react';
 import type { Route } from 'next';
-import { config } from '@/lib/config';
+import { serverConfig } from '@/lib/config';
 
 type Props = {
   children: ReactNode;
@@ -10,7 +10,8 @@ type Props = {
 const navLinks: { href: Route; label: string }[] = [
   { href: '/', label: 'Overview' },
   { href: '/status', label: 'Status' },
-  { href: '/health', label: 'Health API' }
+  { href: '/health', label: 'Health' },
+  { href: '/agents', label: 'Agents' }
 ];
 
 export default function AppShell({ children }: Props) {
@@ -27,7 +28,7 @@ export default function AppShell({ children }: Props) {
             </Link>
           ))}
           <span className="badge" style={{ marginLeft: 'auto' }}>
-            Environment: {config.environment}
+            Environment: {serverConfig.environment}
           </span>
         </div>
       </nav>
