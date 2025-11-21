@@ -3,7 +3,7 @@ import { ReactNode } from 'react';
 import AppShell from '@/components/layout/AppShell';
 
 export const metadata = {
-  title: 'Prism Console',
+  title: 'BlackRoad OS – Prism Console',
   description: 'Operational console for BlackRoad OS'
 };
 
