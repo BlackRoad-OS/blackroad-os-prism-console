@@ -1,4 +1,4 @@
-FROM node:18-alpine AS builder
+FROM node:20-alpine AS builder
 WORKDIR /app
 
 COPY package*.json ./
@@ -7,16 +7,18 @@ RUN npm install
 COPY . .
 RUN npm run build
 
-FROM node:18-alpine AS runner
+FROM node:20-alpine AS runner
 WORKDIR /app
 
-COPY package*.json ./
-RUN npm install --omit=dev
+ENV NODE_ENV=production
 
-COPY --from=builder /app/.next ./.next
+# Copy standalone output
+COPY --from=builder /app/.next/standalone ./
+COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-COPY --from=builder /app/next.config.* ./
 
-ENV PORT=8080
-EXPOSE 8080
-CMD ["npm", "start"]
+# Railway provides PORT dynamically, but we can set a default
+ENV PORT=3000
+EXPOSE $PORT
+
+CMD ["node", "server.js"]
