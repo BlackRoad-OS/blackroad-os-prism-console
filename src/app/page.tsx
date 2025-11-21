@@ -28,27 +28,47 @@ export default function Home() {
         </div>
       </div>
 
-      <LiveHealthCard />
-
-      <div className="card">
-        <h3>Configuration Snapshot</h3>
-        <p className="muted">Resolved URLs from server/public configuration.</p>
-        <table className="table">
-          <tbody>
-            <tr>
-              <td>Core API</td>
-              <td className="muted">{publicConfig.coreApiUrl || serverConfig.coreApiUrl || 'not set'}</td>
-            </tr>
-            <tr>
-              <td>Agents API</td>
-              <td className="muted">{publicConfig.agentsApiUrl || serverConfig.agentsApiUrl || 'not set'}</td>
-            </tr>
-            <tr>
-              <td>Console URL</td>
-              <td className="muted">{publicConfig.consoleUrl || serverConfig.consoleUrl || 'not set'}</td>
-            </tr>
-          </tbody>
-        </table>
+      <div className="card" style={{ gridColumn: 'span 2' }}>
+        <h2>System Status</h2>
+        <p className="muted">Live and static readiness signals for the Prism Console.</p>
+        <div className="grid">
+          <LiveHealthCard />
+          <div className="card">
+            <h3>Configuration Snapshot</h3>
+            <p className="muted">Resolved URLs from server/public configuration.</p>
+            <table className="table">
+              <tbody>
+                <tr>
+                  <td>Core API</td>
+                  <td className="muted">{publicConfig.coreApiUrl || serverConfig.coreApiUrl || 'not set'}</td>
+                </tr>
+                <tr>
+                  <td>Agents API</td>
+                  <td className="muted">{publicConfig.agentsApiUrl || serverConfig.agentsApiUrl || 'not set'}</td>
+                </tr>
+                <tr>
+                  <td>Console URL</td>
+                  <td className="muted">{publicConfig.consoleUrl || serverConfig.consoleUrl || 'not set'}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div className="card">
+            <h3>Dependency Checklist</h3>
+            <p className="muted">Configuration readiness across Prism Console dependencies.</p>
+            <ul>
+              {serviceHealth.map((service) => (
+                <li key={service.key}>
+                  {service.name}:{' '}
+                  <span className={service.configured ? 'status-ok' : 'status-bad'}>
+                    {service.configured ? 'Configured' : 'Missing'}
+                  </span>{' '}
+                  <span className="muted">{service.url || 'not set'}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
       </div>
 
       <div className="card" style={{ gridColumn: 'span 2' }}>
@@ -61,22 +81,6 @@ export default function Home() {
                 {svc.name}
               </a>{' '}
               <span className="muted">{svc.url}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      <div className="card">
-        <h3>System Status</h3>
-        <p className="muted">Configuration readiness across Prism Console dependencies.</p>
-        <ul>
-          {serviceHealth.map((service) => (
-            <li key={service.key}>
-              {service.name}:{' '}
-              <span className={service.configured ? 'status-ok' : 'status-bad'}>
-                {service.configured ? 'Configured' : 'Missing'}
-              </span>{' '}
-              <span className="muted">{service.url || 'not set'}</span>
             </li>
           ))}
         </ul>
