@@ -4,10 +4,10 @@
   "description": "Admin console for deployments, observability, environments, and system control.",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 3000",
+    "dev": "next dev",
     "build": "next build",
-    "start": "next start -p $PORT",
-    "lint": "eslint . --ext .ts,.tsx"
+    "start": "next start -p ${PORT:-3000}",
+    "lint": "next lint"
   },
   "keywords": [
     "prism",
@@ -16,6 +16,9 @@
   ],
   "author": "Prism Operations Group",
   "license": "Apache-2.0",
+  "engines": {
+    "node": ">=20"
+  },
   "dependencies": {
     "next": "^16.0.3",
     "react": "^19.2.0",
