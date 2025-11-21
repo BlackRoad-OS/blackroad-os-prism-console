@@ -1,43 +1,74 @@
+import { LiveHealthCard } from '@/components/status/LiveHealthCard';
 import { getStaticServiceHealth, publicConfig, serverConfig } from '@/lib/config';
+import { serviceConfig } from '@/config/serviceConfig';
 
-const cards = [
-  { title: 'Core API', key: 'coreApiUrl', description: 'Primary backend for Prism data.' },
-  { title: 'Agents API', key: 'agentsApiUrl', description: 'Agent runtime surface area.' },
-  { title: 'Console URL', key: 'consoleUrl', description: 'Public entrypoint for this console.' }
-] as const;
+const serviceLinks = [
+  { name: 'Core', url: 'https://core.blackroad.systems' },
+  { name: 'API', url: 'https://api.blackroad.systems' },
+  { name: 'Operator', url: 'https://operator.blackroad.systems' },
+  { name: 'Web', url: 'https://blackroad.systems' },
+  { name: 'Docs', url: 'https://docs.blackroad.systems' }
+];
 
 export default function Home() {
   const serviceHealth = getStaticServiceHealth();
-  const resolvedValues = {
-    coreApiUrl: publicConfig.coreApiUrl || serverConfig.coreApiUrl,
-    agentsApiUrl: publicConfig.agentsApiUrl || serverConfig.agentsApiUrl,
-    consoleUrl: publicConfig.consoleUrl || serverConfig.consoleUrl
-  } as const;
 
   return (
     <div className="grid">
+      <div className="card" style={{ gridColumn: 'span 2' }}>
+        <h1>{serviceConfig.SERVICE_NAME}</h1>
+        <p className="muted">Operator-facing control panel for BlackRoad OS</p>
+        <div style={{ display: 'flex', gap: 12, alignItems: 'center', flexWrap: 'wrap' }}>
+          <span className="badge">Service ID: {serviceConfig.SERVICE_ID}</span>
+          <span className="badge">Environment: {serverConfig.environment}</span>
+        </div>
+        <div style={{ marginTop: 12 }}>
+          <div className="muted">Base URL: {serviceConfig.SERVICE_BASE_URL}</div>
+          <div className="muted">OS Root: {serviceConfig.OS_ROOT}</div>
+        </div>
+      </div>
+
+      <LiveHealthCard />
+
       <div className="card">
-        <h3>Environment</h3>
-        <p className="muted">Aligns with Railway and Cloudflare mapping.</p>
-        <div className="badge">{serverConfig.environment}</div>
+        <h3>Configuration Snapshot</h3>
+        <p className="muted">Resolved URLs from server/public configuration.</p>
         <table className="table">
           <tbody>
-            {cards.map((card) => (
-              <tr key={card.key}>
-                <td>{card.title}</td>
-                <td className="muted">{resolvedValues[card.key] || 'not set'}</td>
-              </tr>
-            ))}
+            <tr>
+              <td>Core API</td>
+              <td className="muted">{publicConfig.coreApiUrl || serverConfig.coreApiUrl || 'not set'}</td>
+            </tr>
+            <tr>
+              <td>Agents API</td>
+              <td className="muted">{publicConfig.agentsApiUrl || serverConfig.agentsApiUrl || 'not set'}</td>
+            </tr>
+            <tr>
+              <td>Console URL</td>
+              <td className="muted">{publicConfig.consoleUrl || serverConfig.consoleUrl || 'not set'}</td>
+            </tr>
           </tbody>
         </table>
-        <p className="muted" style={{ marginTop: 12 }}>
-          Add authentication here later — centralize auth checks before rendering protected pages.
-        </p>
+      </div>
+
+      <div className="card" style={{ gridColumn: 'span 2' }}>
+        <h3>Services</h3>
+        <p className="muted">Static references for connected BlackRoad OS surfaces.</p>
+        <ul>
+          {serviceLinks.map((svc) => (
+            <li key={svc.name}>
+              <a href={svc.url} target="_blank" rel="noreferrer">
+                {svc.name}
+              </a>{' '}
+              <span className="muted">{svc.url}</span>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className="card">
-        <h3>Connectivity</h3>
-        <p className="muted">Configuration-based readiness of upstream services.</p>
+        <h3>System Status</h3>
+        <p className="muted">Configuration readiness across Prism Console dependencies.</p>
         <ul>
           {serviceHealth.map((service) => (
             <li key={service.key}>
@@ -52,11 +83,12 @@ export default function Home() {
       </div>
 
       <div className="card">
-        <h3>Notes</h3>
+        <h3>Operator Queue</h3>
+        <p className="muted">Placeholder for pending operator tasks, incidents, or approvals.</p>
         <ul>
-          <li>Use /status for a focused service status board.</li>
-          <li>Centralized fetch helper lives in <code>src/lib/api.ts</code>.</li>
-          <li>Health endpoint: <code>/api/health</code>.</li>
+          <li>Integrate authentication for console routes.</li>
+          <li>Connect deployment events stream.</li>
+          <li>Surface observability snapshots from core services.</li>
         </ul>
       </div>
     </div>

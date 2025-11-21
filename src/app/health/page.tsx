@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from 'react';
 import type { ServiceStatus } from '@/lib/config';
+import { serviceConfig } from '@/config/serviceConfig';
 
 type HealthResponse = {
+  ok: boolean;
   status: string;
-  timestamp: string;
+  ts: string;
   environment: string;
   version?: string;
   services: ServiceStatus[];
@@ -53,15 +55,13 @@ export default function HealthPage() {
     <div className="grid">
       <div className="card">
         <h1>Health Check</h1>
-        <p className="muted">Live status from <code>/api/health</code>.</p>
+        <p className="muted">Live status from <code>/api/health</code> for {serviceConfig.SERVICE_NAME}.</p>
         {health && (
           <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <span className={health.status === 'ok' ? 'badge' : 'status-bad'}>
-              {health.status === 'ok' ? 'OK' : 'Degraded'}
-            </span>
+            <span className={health.ok ? 'badge' : 'status-bad'}>{health.ok ? 'OK' : 'Degraded'}</span>
             <span className="muted">Env: {health.environment}</span>
             <span className="muted">Version: {health.version}</span>
-            <span className="muted">Updated: {new Date(health.timestamp).toLocaleString()}</span>
+            <span className="muted">Updated: {new Date(health.ts).toLocaleString()}</span>
           </div>
         )}
         {error && <p className="status-bad">{error}</p>}
