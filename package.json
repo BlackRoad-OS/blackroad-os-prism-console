@@ -4,9 +4,9 @@
   "description": "Admin console for deployments, observability, environments, and system control.",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "SKIP_ENV_VALIDATION=true next build",
-    "start": "next start -p 8080",
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p $PORT",
     "lint": "eslint . --ext .ts,.tsx"
   },
   "keywords": [
