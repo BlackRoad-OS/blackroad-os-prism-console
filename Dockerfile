@@ -16,7 +16,6 @@ RUN npm install --omit=dev
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.* ./
-COPY --from=builder /app/tsconfig.json ./
 
 ENV PORT=8080
 EXPOSE 8080
