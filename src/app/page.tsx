@@ -1,14 +1,7 @@
 import { LiveHealthCard } from '@/components/status/LiveHealthCard';
+import { ServiceHealthGrid } from '@/components/status/ServiceHealthGrid';
 import { getStaticServiceHealth, publicConfig, serverConfig } from '@/lib/config';
 import { serviceConfig } from '@/config/serviceConfig';
-
-const serviceLinks = [
-  { name: 'Core', url: 'https://core.blackroad.systems' },
-  { name: 'API', url: 'https://api.blackroad.systems' },
-  { name: 'Operator', url: 'https://operator.blackroad.systems' },
-  { name: 'Web', url: 'https://blackroad.systems' },
-  { name: 'Docs', url: 'https://docs.blackroad.systems' }
-];
 
 export default function Home() {
   const serviceHealth = getStaticServiceHealth();
@@ -71,20 +64,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div className="card" style={{ gridColumn: 'span 2' }}>
-        <h3>Services</h3>
-        <p className="muted">Static references for connected BlackRoad OS surfaces.</p>
-        <ul>
-          {serviceLinks.map((svc) => (
-            <li key={svc.name}>
-              <a href={svc.url} target="_blank" rel="noreferrer">
-                {svc.name}
-              </a>{' '}
-              <span className="muted">{svc.url}</span>
-            </li>
-          ))}
-        </ul>
-      </div>
+      <ServiceHealthGrid />
 
       <div className="card">
         <h3>Operator Queue</h3>
