@@ -63,10 +63,54 @@ See `.env.example` for available variables. Key values:
 - `/api/debug-env` – safe environment surface for troubleshooting
 
 ## Deployment (Railway)
-- Build command: `npm install && npm run build`
-- Start command: `npm start`
-- Port: `8080`
-- Healthcheck: `/api/health`
+
+This repository is configured for deployment on [Railway](https://railway.app) with the following setup:
+
+### Automatic Configuration
+The repository includes Railway configuration files:
+- `railway.toml` – Railway deployment configuration (recommended)
+- `railway.json` – Legacy Railway configuration (deprecated but supported)
+- `nixpacks.toml` – Nixpacks build configuration
+
+### Required Environment Variables
+Set these in your Railway service settings:
+- `NODE_ENV=production` (automatically set by Railway)
+- `PORT` (automatically provided by Railway)
+
+### Optional Environment Variables
+For full functionality, configure:
+- `SERVICE_BASE_URL` – Public URL of this console (e.g., `https://console.blackroad.systems`)
+- `OS_ROOT` – Base BlackRoad OS root URL (e.g., `https://blackroad.systems`)
+- `CORE_API_URL` – Core API endpoint (optional)
+- `AGENTS_API_URL` – Agents API endpoint (optional)
+- `PUBLIC_CONSOLE_URL` – Public console URL (optional)
+- `NEXT_PUBLIC_OS_ROOT` – Client-side OS root URL
+- `NEXT_PUBLIC_SERVICE_ID=console`
+- `NEXT_PUBLIC_SERVICE_NAME="BlackRoad OS – Prism Console"`
+
+### Deployment Details
+- **Build Command**: Automatically detected from `package.json` (`npm run build`)
+- **Start Command**: Automatically detected from `package.json` (`npm start`)
+- **Health Check**: `/api/health` (configured in `railway.toml`)
+- **Port**: Dynamically assigned by Railway via `$PORT` environment variable
+
+### Manual Deployment
+If deploying manually or with custom settings:
+1. Build: `npm install && npm run build`
+2. Start: `npm start` (uses standalone Next.js server)
+3. Ensure `PORT` environment variable is set
+
+### Healthcheck Response
+The `/api/health` endpoint returns:
+```json
+{
+  "ok": true,
+  "service": "console",
+  "status": "ok",
+  "environment": "production",
+  "version": "1.0.0"
+}
+```
 
 ## Additional Notes
 - Base URL: https://console.blackroad.systems
