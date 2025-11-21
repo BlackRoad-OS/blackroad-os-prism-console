@@ -18,14 +18,14 @@ function readEnv(variable: string, { optional, defaultValue }: ReadEnvOptions = 
   const value = process.env[variable];
 
   if (!value && !optional && requireEnv) {
-    throw new Error(`Missing required environment variable ${variable} for ${environment}`);
+    console.warn(`Missing required environment variable ${variable} for ${environment}`);
   }
 
-  if (!value && defaultValue) {
-    return defaultValue;
+  if (!value) {
+    return defaultValue ?? '';
   }
 
-  return value ?? '';
+  return value;
 }
 
 export const serverConfig = {
