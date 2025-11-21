@@ -55,7 +55,7 @@ export function LiveHealthCard() {
 
   const statusText = loading ? 'CHECKING' : health?.ok ? 'ONLINE' : 'OFFLINE';
   const statusClass = loading ? 'badge' : health?.ok ? 'badge' : 'status-bad';
-  const checkedAt = health?.ts || lastChecked;
+  const checkedAt = lastChecked;
 
   return (
     <div className="card">
