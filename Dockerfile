@@ -18,7 +18,9 @@ COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
 
 # Railway provides PORT dynamically, but we can set a default
-ENV PORT=3000
+ENV PORT=8080
+ENV HOST=0.0.0.0
+ENV HOSTNAME=0.0.0.0
 EXPOSE $PORT
 
 CMD ["node", "server.js"]
