@@ -1,5 +1,6 @@
-import { pollServiceHealth, publicConfig } from '@/lib/config';
+import { getOperatorApiUrl, pollServiceHealth, publicConfig } from '@/lib/config';
 import { StatusCard } from '@/components/status/StatusCard';
+import { OperatorHealthDashboard } from '@/components/status/OperatorHealthDashboard';
 
 export const metadata = {
   title: 'System Status | Prism Console'
@@ -11,9 +12,11 @@ export const dynamic = 'force-dynamic';
 export default async function StatusPage() {
   const services = await pollServiceHealth();
   const env = publicConfig.environment;
+  const operatorApiUrl = getOperatorApiUrl();
 
   return (
     <div className="grid">
+      <OperatorHealthDashboard operatorApiUrl={operatorApiUrl} />
       <StatusCard
         title="Prism Console"
         description="Live health from upstream services. Polls /health for each configured endpoint."

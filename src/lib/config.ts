@@ -31,6 +31,7 @@ function readEnv(variable: string, { optional, defaultValue }: ReadEnvOptions = 
 export const serverConfig = {
   environment,
   nodeEnv: environment,
+  operatorApiUrl: readEnv('OPERATOR_API_URL', { optional: isDev }),
   coreApiUrl: readEnv('CORE_API_URL', { optional: isDev }),
   agentsApiUrl: readEnv('AGENTS_API_URL', { optional: isDev }),
   consoleUrl: readEnv('PUBLIC_CONSOLE_URL', { optional: isDev }),
@@ -48,6 +49,7 @@ export const serverConfig = {
 export const publicConfig = {
   environment,
   consoleUrl: readEnv('PUBLIC_CONSOLE_URL', { optional: true }),
+  operatorApiUrl: readEnv('NEXT_PUBLIC_OPERATOR_API_URL', { optional: true }),
   coreApiUrl: readEnv('NEXT_PUBLIC_CORE_API_URL', { optional: true }),
   agentsApiUrl: readEnv('NEXT_PUBLIC_AGENTS_API_URL', { optional: true })
 };
@@ -70,6 +72,12 @@ const serviceCatalog: Record<ServiceKey, { name: string }> = {
   core: { name: 'Core API' },
   agents: { name: 'Agents API' }
 };
+
+export function getOperatorApiUrl(preferPublic = true): string {
+  return preferPublic
+    ? publicConfig.operatorApiUrl || serverConfig.operatorApiUrl
+    : serverConfig.operatorApiUrl || publicConfig.operatorApiUrl;
+}
 
 function resolveServiceUrl(key: ServiceKey, preferPublic = true): string {
   if (key === 'console') {
