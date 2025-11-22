@@ -75,6 +75,8 @@ export function ServiceHealthGrid() {
         {services.map((service) => {
           const result = results[service.id];
           const statusClass = result ? (result.status === 'up' ? 'status-ok' : 'status-bad') : 'badge';
+          const payload = result?.payload;
+          const hasPayload = typeof payload !== 'undefined';
           return (
             <div key={service.id} className="card">
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
@@ -95,10 +97,10 @@ export function ServiceHealthGrid() {
                 </div>
               </dl>
               {result?.errorMessage && <p className="status-bad">{result.errorMessage}</p>}
-              {result?.payload && (
+              {hasPayload && (
                 <details style={{ marginTop: 8 }}>
                   <summary>Health payload</summary>
-                  <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(result.payload, null, 2)}</pre>
+                  <pre style={{ whiteSpace: 'pre-wrap' }}>{JSON.stringify(payload, null, 2)}</pre>
                 </details>
               )}
               {!result && loading && <p className="muted">Checking...</p>}
