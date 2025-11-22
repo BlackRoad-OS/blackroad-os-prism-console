@@ -10,7 +10,6 @@ type Props = {
 const navLinks: { href: Route; label: string }[] = [
   { href: '/', label: 'Overview' },
   { href: '/status', label: 'Status' },
-  { href: '/health', label: 'Health' },
   { href: '/agents', label: 'Agents' }
 ];
 
