@@ -9,11 +9,10 @@ export default function EventsPage() {
   const [limit, setLimit] = useState<number | undefined>(25);
   const [type, setType] = useState('');
   const [source, setSource] = useState('');
-  const { events, isLoading, error, setParams, refetch } = useEvents({ limit });
+  const { events, isLoading, error, setParams } = useEvents({ limit });
 
   const applyFilters = () => {
     setParams({ limit, type: type || undefined, source: source || undefined });
-    refetch();
   };
 
   const columns = [
