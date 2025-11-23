@@ -12,6 +12,14 @@ Operator / admin console for BlackRoad OS services. The app is a Next.js (App Ro
     "service": "prism-console"
   }
   ```
+- **Required env vars** (production):
+  - `PORT`: provided by Railway; the app listens on this port.
+  - `HOST`: set to `0.0.0.0` to bind to all interfaces (defaulted in `npm start`).
+  - `NODE_ENV`: set to `production` in Railway.
+  - `PUBLIC_CONSOLE_URL`: public URL for the console (used for links and health checks).
+  - `NEXT_PUBLIC_OPERATOR_API_URL` / `OPERATOR_API_URL`: base URL for the Operator API (public vs server-side).
+  - `NEXT_PUBLIC_CORE_API_URL` / `CORE_API_URL`: base URL for the Core API (public vs server-side).
+  - `NEXT_PUBLIC_AGENTS_API_URL` / `AGENTS_API_URL`: base URL for the Agents API (public vs server-side).
 
 ## Local Development
 Install dependencies and run the dev server:
