@@ -1,11 +1,11 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Agent } from '@/types';
-import { getAgents } from '@/lib/apiClient';
+import { SystemOverview } from '@/types';
+import { getSystemOverview } from '@/lib/apiClient';
 
-export function useAgents() {
-  const [data, setData] = useState<Agent[]>([]);
+export function useSystemOverview() {
+  const [data, setData] = useState<SystemOverview | null>(null);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
 
@@ -13,7 +13,7 @@ export function useAgents() {
     let cancelled = false;
     setLoading(true);
 
-    getAgents()
+    getSystemOverview()
       .then((res) => {
         if (!cancelled) {
           setData(res);
@@ -23,7 +23,6 @@ export function useAgents() {
       .catch((err: Error) => {
         if (!cancelled) {
           setError(err);
-          setData([]);
         }
       })
       .finally(() => {

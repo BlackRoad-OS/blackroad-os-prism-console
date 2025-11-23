@@ -4,14 +4,30 @@ import { DashboardView } from './page';
 
 timeZoneMock();
 
-vi.mock('@/hooks/useFinanceSummary', () => ({
-  useFinanceSummary: () => ({
+vi.mock('@/hooks/useSystemOverview', () => ({
+  useSystemOverview: () => ({
     data: {
-      currency: 'USD',
-      cashBalance: 1500000,
-      monthlyBurnRate: 250000,
-      runwayMonths: 6,
-      generatedAt: '2025-01-01T00:00:00Z'
+      overallStatus: 'healthy',
+      services: [
+        { id: 'api', name: 'api', status: 'healthy', lastChecked: '2025-01-01T00:00:00Z' },
+        { id: 'operator', name: 'operator', status: 'degraded', lastChecked: '2025-01-01T00:00:00Z' }
+      ],
+      jobsProcessedLast24h: 10,
+      errorsLast24h: 1
+    },
+    isLoading: false,
+    error: null
+  })
+}));
+
+vi.mock('@/hooks/useFinanceSnapshot', () => ({
+  useFinanceSnapshot: () => ({
+    data: {
+      walletBalanceUsd: 150000,
+      monthlyInfraCostUsd: 12000,
+      estimatedSavingsUsd: 24000,
+      monthlyRevenueUsd: 32000,
+      timestamp: '2025-01-01T00:00:00Z'
     },
     isLoading: false,
     error: null
@@ -21,8 +37,8 @@ vi.mock('@/hooks/useFinanceSummary', () => ({
 vi.mock('@/hooks/useAgents', () => ({
   useAgents: () => ({
     data: [
-      { id: 'a1', name: 'Agent One', status: 'online', capabilities: [], domain: 'finance' },
-      { id: 'a2', name: 'Agent Two', status: 'degraded', capabilities: [], domain: 'research' }
+      { id: 'a1', name: 'Agent One', role: 'ops', status: 'running', lastHeartbeat: '2025-01-01T00:00:00Z' },
+      { id: 'a2', name: 'Agent Two', role: 'finance', status: 'idle', lastHeartbeat: '2025-01-01T00:00:00Z' }
     ],
     isLoading: false,
     error: null
@@ -32,7 +48,14 @@ vi.mock('@/hooks/useAgents', () => ({
 vi.mock('@/hooks/useEvents', () => ({
   useEvents: () => ({
     events: [
-      { id: 'e1', type: 'task.completed', source: 'agent:finance', timestamp: '2025-01-01T00:00:00Z' }
+      {
+        id: 'e1',
+        type: 'task.completed',
+        source: 'agent:finance',
+        timestamp: '2025-01-01T00:00:00Z',
+        summary: 'done',
+        severity: 'info'
+      }
     ],
     isLoading: false,
     error: null
@@ -45,14 +68,14 @@ function timeZoneMock() {
 }
 
 describe('DashboardView', () => {
-  it('shows finance and agent stats', () => {
+  it('renders core stats', () => {
     render(<DashboardView />);
 
-    expect(screen.getByText('Cash Balance')).toBeInTheDocument();
-    expect(screen.getByText('$1,500,000')).toBeInTheDocument();
-    expect(screen.getByText('Runway (months)')).toBeInTheDocument();
-    expect(screen.getByText('6.0')).toBeInTheDocument();
-    expect(screen.getByText('Total agents')).toBeInTheDocument();
-    expect(screen.getAllByText('2').length).toBeGreaterThan(0);
+    expect(screen.getByText('Prism Console Overview')).toBeInTheDocument();
+    expect(screen.getByText('BlackRoad OS')).toBeInTheDocument();
+    expect(screen.getByText('OS Wallet Balance')).toBeInTheDocument();
+    expect(screen.getByText('Estimated Savings')).toBeInTheDocument();
+    expect(screen.getByText('Active Agents')).toBeInTheDocument();
+    expect(screen.getByText('Recent Events')).toBeInTheDocument();
   });
 });

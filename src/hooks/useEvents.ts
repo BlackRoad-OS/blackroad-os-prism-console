@@ -1,8 +1,14 @@
 'use client';
 
-import { useEffect, useState } from 'react';
-import type { EventRecord } from '../types/events';
-import { fetchEvents, type EventQueryParams } from '../services/eventsService';
+import { useEffect, useMemo, useState } from 'react';
+import { EventRecord } from '@/types';
+import { getEvents } from '@/lib/apiClient';
+
+export type EventQueryParams = {
+  limit?: number;
+  severity?: string;
+  search?: string;
+};
 
 export function useEvents(initialParams: EventQueryParams = {}, pollIntervalMs?: number) {
   const [params, setParams] = useState<EventQueryParams>(initialParams);
@@ -12,12 +18,12 @@ export function useEvents(initialParams: EventQueryParams = {}, pollIntervalMs?:
 
   const load = (nextParams: EventQueryParams = params) => {
     setLoading(true);
-    fetchEvents(nextParams)
+    getEvents(nextParams)
       .then((records) => {
         setEvents(records);
         setError(null);
       })
-      .catch((err) => {
+      .catch((err: Error) => {
         setError(err);
         setEvents([]);
       })
@@ -29,12 +35,23 @@ export function useEvents(initialParams: EventQueryParams = {}, pollIntervalMs?:
     if (!pollIntervalMs) return;
     const id = setInterval(() => load(params), pollIntervalMs);
     return () => clearInterval(id);
-  }, [pollIntervalMs, params]);
+  }, [pollIntervalMs]);
+
+  const filtered = useMemo(() => {
+    return events.filter((event) => {
+      const matchesSeverity = params.severity ? event.severity === params.severity : true;
+      const searchText = params.search?.toLowerCase().trim();
+      const matchesSearch = searchText
+        ? event.summary.toLowerCase().includes(searchText) || event.source.toLowerCase().includes(searchText)
+        : true;
+      return matchesSeverity && matchesSearch;
+    });
+  }, [events, params.severity, params.search]);
 
   const updateParams = (next: EventQueryParams) => {
     setParams(next);
     load(next);
   };
 
-  return { events, isLoading, error, params, setParams: updateParams, refetch: () => load(params) };
+  return { events: filtered, isLoading, error, params, setParams: updateParams, refetch: () => load(params) };
 }
