@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "HOST=0.0.0.0 PORT=${PORT:-8080} node .next/standalone/server.js",
+    "start": "bun run src/index.ts",
     "start:dev": "next start -p ${PORT:-3000}",
     "lint": "next lint"
   },
