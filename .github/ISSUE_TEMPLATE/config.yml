@@ -1,0 +1,8 @@
+blank_issues_enabled: true
+contact_links:
+  - name: BlackRoad OS Documentation
+    url: https://github.com/BlackRoad-OS/blackroad-os-docs
+    about: General documentation for the BlackRoad OS ecosystem
+  - name: BlackRoad OS Agents Registry
+    url: https://github.com/BlackRoad-OS/blackroad-os-agents
+    about: Agent and pack registry for the BlackRoad OS ecosystem
