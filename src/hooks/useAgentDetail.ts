@@ -1,11 +1,36 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { AgentSummary, AgentTaskSummary } from '../types/agents';
-import { fetchAgentDetail, fetchAgentTasks } from '../services/agentsService';
+import { Agent } from '@/types';
+import { getAgents } from '@/lib/apiClient';
+
+type AgentTaskSummary = {
+  id: string;
+  type: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+};
+
+const mockTasks: AgentTaskSummary[] = [
+  {
+    id: 'task-001',
+    type: 'health.check',
+    status: 'completed',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  },
+  {
+    id: 'task-002',
+    type: 'finance.reconcile',
+    status: 'pending',
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString()
+  }
+];
 
 export function useAgentDetail(id: string | undefined) {
-  const [agent, setAgent] = useState<AgentSummary | null>(null);
+  const [agent, setAgent] = useState<Agent | null>(null);
   const [tasks, setTasks] = useState<AgentTaskSummary[]>([]);
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -15,13 +40,13 @@ export function useAgentDetail(id: string | undefined) {
     let cancelled = false;
     setLoading(true);
 
-    Promise.all([fetchAgentDetail(id), fetchAgentTasks(id)])
-      .then(([agentDetail, agentTasks]) => {
-        if (!cancelled) {
-          setAgent(agentDetail);
-          setTasks(agentTasks);
-          setError(null);
-        }
+    getAgents()
+      .then((agents) => {
+        if (cancelled) return;
+        const found = agents.find((a) => a.id === id) || null;
+        setAgent(found);
+        setTasks(mockTasks);
+        setError(null);
       })
       .catch((err) => {
         if (!cancelled) {
@@ -31,9 +56,7 @@ export function useAgentDetail(id: string | undefined) {
         }
       })
       .finally(() => {
-        if (!cancelled) {
-          setLoading(false);
-        }
+        if (!cancelled) setLoading(false);
       });
 
     return () => {

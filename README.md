@@ -1,14 +1,17 @@
 # BlackRoad OS – Prism Console
 
-Operator / admin console for BlackRoad OS services. The app is a Next.js (App Router) frontend that surfaces environment metadata, service health, agent observability, finance telemetry, and the event stream.
+Prism Console is the operator-facing cockpit for the BlackRoad OS universe. It runs on Next.js (App Router) with TypeScript and
+presents environment health, agents, finance, and RoadChain history. Prism speaks to **blackroad-os-api** using
+`NEXT_PUBLIC_API_BASE_URL` and participates in the shared GitHub Project **"BlackRoad OS - Master Orchestration"** alongside
+core, operator, web, docs, and infra repos.
 
-## Features
-- Overview dashboard with finance summary, agent counts, and latest events.
-- Agents list and detail drill-down with recent tasks.
-- Finance view with cash balance, runway, forecast buckets, and example statements.
-- Events stream with basic filters.
+## Pages
+- **Dashboard**: System overview with service health, throughput, and a quick glance at agents + events.
+- **Agents**: Filterable agent registry with status pills and a detail viewer for raw metadata.
+- **Finance**: Wallet-style snapshot of treasury, infra costs, savings, and trend hints.
+- **Events / RoadChain**: Event stream filters plus a lightweight RoadChain block explorer (mocked until the API endpoint ships).
 
-## Local Development
+## Getting started
 Install dependencies and run the dev server:
 
 ```bash
@@ -18,40 +21,29 @@ npm run dev
 
 Visit http://localhost:3000 during development.
 
-### Environment
-Set up `.env.local` (see `.env.example`) with:
+### Environment variables
+Create `.env.local` with at least:
 
 ```
 NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
 NEXT_PUBLIC_ENV=dev
 ```
 
-Additional optional URLs remain supported:
-- `NEXT_PUBLIC_OPERATOR_API_URL` / `OPERATOR_API_URL`
-- `NEXT_PUBLIC_CORE_API_URL` / `CORE_API_URL`
-- `NEXT_PUBLIC_AGENTS_API_URL` / `AGENTS_API_URL`
-- `PUBLIC_CONSOLE_URL`
+`NEXT_PUBLIC_API_BASE_URL` should point to the `blackroad-os-api` instance that exposes health, agents, finance, events, and
+roadchain endpoints. The UI falls back to typed mock data if the API is unreachable, so the console remains navigable.
 
-## Deployment Quick Reference (Railway)
+## Deployment quick reference
 - **Build**: `npm run build`
-- **Start**: `npm start` (runs the standalone Next.js server with `HOST=0.0.0.0` and `PORT=${PORT:-8080}`)
-- **Health**: `GET /health`
-  ```json
-  {
-    "status": "ok",
-    "service": "prism-console"
-  }
-  ```
+- **Start**: `npm start` (standalone Next.js server)
+- **Health**: `GET /health` returns `{ "status": "ok", "service": "prism-console" }`
 
-Production tips:
-- `PORT`: provided by Railway; the app listens on this port.
-- `HOST`: set to `0.0.0.0` to bind to all interfaces (defaulted in `npm start`).
-- `NODE_ENV`: set to `production` in Railway.
-- `NEXT_PUBLIC_API_BASE_URL`: target `blackroad-os-api` environment.
-- `NEXT_PUBLIC_ENV`: label displayed in the console top bar.
+Environment tips for Railway or container runtimes:
+- `PORT`: provided by the platform; set `HOST=0.0.0.0` when starting.
+- `NODE_ENV`: `production` for deployment.
+- `NEXT_PUBLIC_API_BASE_URL`: target the correct `blackroad-os-api` environment.
+- `NEXT_PUBLIC_ENV`: label shown in the top status bar.
 
-## Project Notes
-- Next.js 16 with the App Router and TypeScript.
-- Production build outputs a standalone server (`.next/standalone`) suitable for Railway or container runtimes.
-- Additional informational endpoints live under `/api` (e.g., `/api/health`, `/api/info`, `/api/version`).
-- See `docs/overview.md` for a product-focused overview of Prism Console.
+## Tech notes
+- Next.js 16 (App Router) + React + TypeScript.
+- Styling via `globals.css` tokens (dark-mode first, no hard-coded brand colors in components).
+- Mock data lives in `src/lib/apiClient.ts` to keep the UI usable until the backend endpoints are live.

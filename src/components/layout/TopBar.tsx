@@ -1,47 +1,47 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useMemo } from 'react';
+import { deriveApiHealth } from '@/lib/apiClient';
+import { useSystemOverview } from '@/hooks/useSystemOverview';
 
 function getEnvironmentLabel() {
   return process.env.NEXT_PUBLIC_ENV || process.env.NODE_ENV || 'development';
 }
 
-type ApiStatus = 'unknown' | 'online' | 'degraded';
-
 export function TopBar() {
-  const [apiStatus, setApiStatus] = useState<ApiStatus>('unknown');
-  const [latency, setLatency] = useState<number | null>(null);
+  const { data, isLoading } = useSystemOverview();
+  const apiHealth = deriveApiHealth(data ?? undefined);
 
-  useEffect(() => {
-    const baseUrl = process.env.NEXT_PUBLIC_API_BASE_URL;
-    if (!baseUrl) return;
-
-    const controller = new AbortController();
-    const start = performance.now();
-    fetch(`${baseUrl}/health`, { signal: controller.signal })
-      .then((res) => {
-        const elapsed = Math.round(performance.now() - start);
-        setLatency(elapsed);
-        setApiStatus(res.ok ? 'online' : 'degraded');
-      })
-      .catch(() => setApiStatus('degraded'));
-
-    return () => controller.abort();
-  }, []);
+  const serviceSummary = useMemo(() => {
+    if (!data) return 'Checking services…';
+    const up = data.services.filter((svc) => svc.status === 'healthy').length;
+    const degraded = data.services.filter((svc) => svc.status === 'degraded').length;
+    const down = data.services.filter((svc) => svc.status === 'down').length;
+    return `${up} healthy • ${degraded} degraded • ${down} down`;
+  }, [data]);
 
   return (
     <header className="topbar">
-      <div>
+      <div className="topbar-group">
         <div className="muted" style={{ fontSize: 12 }}>
           Environment
         </div>
         <div className="topbar-env">{getEnvironmentLabel()}</div>
       </div>
-      <div className="topbar-status">
-        <span className={`status-pill ${apiStatus}`}>{apiStatus}</span>
-        {latency !== null && <span className="muted">{latency} ms</span>}
+      <div className="topbar-group">
+        <span className={`status-pill ${apiHealth}`}>{apiHealth}</span>
+        <span className="muted small">{serviceSummary}</span>
+        {isLoading && <span className="muted small">Refreshing…</span>}
       </div>
-      <div className="topbar-user">Cecilia • Orchestrator</div>
+      <div className="topbar-user">
+        <div className="avatar">◈</div>
+        <div>
+          <div className="muted" style={{ fontSize: 12 }}>
+            Operator
+          </div>
+          <div className="topbar-operator">Prism Steward</div>
+        </div>
+      </div>
     </header>
   );
 }
