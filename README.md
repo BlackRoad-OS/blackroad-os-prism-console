@@ -68,8 +68,6 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for detailed setup instructions.
 
 ## 🚢 Deployment
 
-## 🚢 Deployment
-
 ### Docker
 
 Dockerized runtime matches the local workflow:
