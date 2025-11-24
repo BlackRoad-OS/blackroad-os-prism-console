@@ -1,26 +1,20 @@
+# Prism Console container
+FROM node:20-alpine AS deps
+WORKDIR /app
+COPY package.json pnpm-lock.yaml* pnpm-lock.yml* pnpm-lock.json* ./
+RUN corepack enable && corepack prepare pnpm@9.12.0 --activate && pnpm install --frozen-lockfile || pnpm install
+
 FROM node:20-alpine AS builder
 WORKDIR /app
-
-COPY package*.json ./
-RUN npm install
-
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run build
+RUN corepack enable && pnpm build
 
 FROM node:20-alpine AS runner
 WORKDIR /app
-
 ENV NODE_ENV=production
-
-# Copy standalone output
+ENV PORT=3000
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 COPY --from=builder /app/public ./public
-
-# Railway provides PORT dynamically, but we can set a default
-ENV PORT=8080
-ENV HOST=0.0.0.0
-ENV HOSTNAME=0.0.0.0
-EXPOSE $PORT
-
 CMD ["node", "server.js"]

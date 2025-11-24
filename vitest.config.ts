@@ -6,11 +6,11 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: './vitest.setup.ts',
-    include: ['src/**/*.test.ts', 'src/**/*.test.tsx']
+    include: ['tests/**/*.test.tsx', 'tests/**/*.test.ts']
   },
   resolve: {
     alias: {
-      '@': path.resolve(__dirname, 'src')
+      '@': path.resolve(__dirname)
     }
   }
 });

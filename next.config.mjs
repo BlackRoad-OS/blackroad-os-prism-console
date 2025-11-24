@@ -1,8 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  output: 'standalone',
   reactStrictMode: true,
-  typedRoutes: true
+  output: 'standalone',
+  experimental: {
+    typedRoutes: true
+  }
 };
 
 export default nextConfig;
