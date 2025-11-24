@@ -5,6 +5,11 @@ Prism Console is the single-pane-of-glass for every BlackRoad environment. This 
 ## Getting Started
 
 Install deps and run locally:
+### Operator doctrine
+- **Prism Console Agent prompt**: See `docs/PRISM_CONSOLE_PROMPT.md` for the live UX mission brief that defines the console's role, goals, and canonical surfaces.
+
+## Getting started
+Install dependencies and run the dev server:
 
 ```bash
 pnpm install
