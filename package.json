@@ -9,6 +9,7 @@
     "start": "bun run src/index.ts",
     "start:dev": "next start -p ${PORT:-3000}",
     "lint": "next lint .",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx --max-warnings=0",
     "test": "vitest"
   },
   "keywords": [
