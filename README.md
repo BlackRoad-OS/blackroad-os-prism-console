@@ -1,49 +1,44 @@
-# BlackRoad OS – Prism Console
+# Prism Console (Gen-0)
 
-Prism Console is the operator-facing cockpit for the BlackRoad OS universe. It runs on Next.js (App Router) with TypeScript and
-presents environment health, agents, finance, and RoadChain history. Prism speaks to **blackroad-os-api** using
-`NEXT_PUBLIC_API_BASE_URL` and participates in the shared GitHub Project **"BlackRoad OS - Master Orchestration"** alongside
-core, operator, web, docs, and infra repos.
+Prism Console is the single-pane-of-glass for every BlackRoad environment. This scaffold keeps the surface minimal and agent-extendable while wiring up the App Router, Tailwind, shadcn-style tokens, and CI hooks.
 
-## Pages
-- **Dashboard**: System overview with service health, throughput, and a quick glance at agents + events.
-- **Agents**: Filterable agent registry with status pills and a detail viewer for raw metadata.
-- **Finance**: Wallet-style snapshot of treasury, infra costs, savings, and trend hints.
-- **Events / RoadChain**: Event stream filters plus a lightweight RoadChain block explorer (mocked until the API endpoint ships).
+## Getting Started
 
-## Getting started
-Install dependencies and run the dev server:
+Install deps and run locally:
 
 ```bash
-npm install
-npm run dev
+pnpm install
+pnpm dev  # http://localhost:3000
 ```
 
-Visit http://localhost:3000 during development.
+Environment variables live in `.env.local` (see `prisma-console.env.example`).
 
-### Environment variables
-Create `.env.local` with at least:
+## Commands
 
+- `pnpm dev` – start the Next.js dev server
+- `pnpm lint` – run eslint with Next.js presets
+- `pnpm test` – run vitest (jsdom)
+- `pnpm build` – create a production build (also writes `public/sig.beacon.json`)
+- `pnpm start` – start the production server on `$PORT`
+
+## API surface
+
+- `GET /api/health` → `{ status: "ok", uptime: number }`
+- `GET /api/version` → `{ version: string, commit: string }`
+
+## Deployment
+
+Dockerized runtime matches the local workflow:
+
+```bash
+docker build -t blackroad/prism-console:0.0.1 .
+docker run -e PORT=3000 -p 3000:3000 blackroad/prism-console:0.0.1
 ```
-NEXT_PUBLIC_API_BASE_URL=http://localhost:3001
-NEXT_PUBLIC_ENV=dev
-```
 
-`NEXT_PUBLIC_API_BASE_URL` should point to the `blackroad-os-api` instance that exposes health, agents, finance, events, and
-roadchain endpoints. The UI falls back to typed mock data if the API is unreachable, so the console remains navigable.
+Railway support is provided via `railway.toml`; adjust environment variables as needed.
 
-## Deployment quick reference
-- **Build**: `npm run build`
-- **Start**: `npm start` (standalone Next.js server)
-- **Health**: `GET /health` returns `{ "status": "ok", "service": "prism-console" }`
+## Roadmap breadcrumbs
 
-Environment tips for Railway or container runtimes:
-- `PORT`: provided by the platform; set `HOST=0.0.0.0` when starting.
-- `NODE_ENV`: `production` for deployment.
-- `NEXT_PUBLIC_API_BASE_URL`: target the correct `blackroad-os-api` environment.
-- `NEXT_PUBLIC_ENV`: label shown in the top status bar.
-
-## Tech notes
-- Next.js 16 (App Router) + React + TypeScript.
-- Styling via `globals.css` tokens (dark-mode first, no hard-coded brand colors in components).
-- Mock data lives in `src/lib/apiClient.ts` to keep the UI usable until the backend endpoints are live.
+- TODO(prism-next): Wire `lib/fetcher.ts` to the BlackRoad OS API Gateway
+- TODO(prism-next): Stream deployment events over `$CORE_HUB/ws`
+- TODO(prism-next): Replace placeholder cards with live environment KPIs

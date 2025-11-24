@@ -1,21 +1,7 @@
-# Infrastructure
+# Infra notes
 
-Placeholder folder for environment configurations and infrastructure-as-code.
+Minimal deployment hints for Prism Console. Extend this with platform-specific modules as the console grows.
 
-## Structure
-
-This directory will contain:
-- Environment configuration templates (env.example)
-- Deployment configurations
-- Infrastructure as Code (IaC) templates
-- CI/CD pipeline configurations
-
-## Getting Started
-
-1. Copy `env.example` to `.env` in your respective service directories
-2. Update the values with your actual configuration
-3. Never commit files containing real secrets or credentials
-
-## Coming Soon
-
-Infrastructure configurations for Railway and Cloudflare will be added as deployment progresses.
+- Dockerfile is built for Node.js 20 and Next.js standalone output.
+- Railway config (`railway.toml`) sets the web service and defaults to port 3000.
+- Environment template lives in `../prisma-console.env.example`.
