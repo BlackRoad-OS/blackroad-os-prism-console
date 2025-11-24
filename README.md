@@ -11,6 +11,9 @@ core, operator, web, docs, and infra repos.
 - **Finance**: Wallet-style snapshot of treasury, infra costs, savings, and trend hints.
 - **Events / RoadChain**: Event stream filters plus a lightweight RoadChain block explorer (mocked until the API endpoint ships).
 
+### Operator doctrine
+- **Prism Console Agent prompt**: See `docs/PRISM_CONSOLE_PROMPT.md` for the live UX mission brief that defines the console's role, goals, and canonical surfaces.
+
 ## Getting started
 Install dependencies and run the dev server:
 
