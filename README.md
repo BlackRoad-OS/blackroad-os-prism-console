@@ -2,11 +2,9 @@
 
 Prism Console is the single-pane-of-glass for every BlackRoad environment. This scaffold keeps the surface minimal and agent-extendable while wiring up the App Router, Tailwind, shadcn-style tokens, and CI hooks.
 
-## Getting Started
-
-Install deps and run locally:
 ### Operator doctrine
-- **Prism Console Agent prompt**: See `docs/PRISM_CONSOLE_PROMPT.md` for the live UX mission brief that defines the console's role, goals, and canonical surfaces.
+- **Prism Console Master Prompt**: See `system/prompts/prism_master_prompt.md` for the V0.1.64 64-state visualization spec.
+- **Prism Console Agent Prompt**: See `docs/PRISM_CONSOLE_PROMPT.md` for the live UX mission brief that defines the console's role, goals, and canonical surfaces.
 
 ## Getting started
 Install dependencies and run the dev server:
