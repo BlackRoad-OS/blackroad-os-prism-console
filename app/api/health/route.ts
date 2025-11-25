@@ -5,5 +5,9 @@ export const runtime = 'edge';
 
 export async function GET() {
   const uptime = Math.round((Date.now() - startTime) / 1000);
-  return NextResponse.json({ status: 'ok', uptime });
+  return NextResponse.json({
+    status: 'ok',
+    service: 'blackroad-prism-console',
+    uptime
+  });
 }
