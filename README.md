@@ -35,6 +35,9 @@ Part of the **BlackRoad-OS** organization:
 - pnpm >= 9.12.0
 
 ### Installation
+### Operator doctrine
+- **Prism Console Master Prompt**: See `system/prompts/prism_master_prompt.md` for the V0.1.64 64-state visualization spec.
+- **Prism Console Agent Prompt**: See `docs/PRISM_CONSOLE_PROMPT.md` for the live UX mission brief that defines the console's role, goals, and canonical surfaces.
 
 Install dependencies and run the dev server:
 
