@@ -5,6 +5,10 @@ builder = "NIXPACKS"
 startCommand = "pnpm start"
 healthcheckPath = "/api/health"
 healthcheckTimeout = 30
+restartPolicyType = "ON_FAILURE"
+restartPolicyMaxRetries = 5
 
 [variables]
+SERVICE_NAME = "blackroad-prism-console"
 PORT = "3000"
+ENVIRONMENT = "production"

@@ -42,6 +42,7 @@
   ],
   "exclude": [
     "node_modules",
-    "tests/**/*.setup.ts"
+    "tests/**/*.setup.ts",
+    "frontend/**/*"
   ]
 }
