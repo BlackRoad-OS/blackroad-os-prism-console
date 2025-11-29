@@ -16,7 +16,7 @@ Part of the **BlackRoad-OS** organization:
 - **Registry:** [blackroad-os-agents](https://github.com/BlackRoad-OS/blackroad-os-agents) | [blackroad-os-infra](https://github.com/BlackRoad-OS/blackroad-os-infra)
 - **Docs:** [blackroad-os-docs](https://github.com/BlackRoad-OS/blackroad-os-docs) | [blackroad-os-archive](https://github.com/BlackRoad-OS/blackroad-os-archive)
 
-📖 **[Repository Role & Architecture](docs/REPOSITORY_ROLE.md)** | 🎯 **[Prism Console Mission](docs/PRISM_CONSOLE_PROMPT.md)** | 🤝 **[Contributing Guide](CONTRIBUTING.md)**
+📖 **[Repository Role & Architecture](docs/REPOSITORY_ROLE.md)** | 🕹️ **[PRISM Mission](docs/PRISM_MISSION.md)** | 🎯 **[Console Prompt](docs/PRISM_CONSOLE_PROMPT.md)** | 🤝 **[Contributing Guide](CONTRIBUTING.md)**
 
 ## ✨ Features
 
@@ -117,6 +117,7 @@ See [`.github/labels.yml`](.github/labels.yml) for the complete label set.
 
 ## 📚 Documentation
 
+- **[Prism Mission](docs/PRISM_MISSION.md)** 🕹️ - The single-pane-of-glass mission brief
 - **[Repository Role](docs/REPOSITORY_ROLE.md)** - This repo's place in the BlackRoad OS ecosystem
 - **[Prism Console Prompt](docs/PRISM_CONSOLE_PROMPT.md)** - UX mission and design philosophy
 - **[Contributing Guide](CONTRIBUTING.md)** - Development guidelines
