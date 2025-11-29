@@ -1,0 +1,244 @@
+name: Cordelia - The Diplomat
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, review_requested]
+  pull_request_review:
+    types: [submitted]
+  issue_comment:
+    types: [created]
+  schedule:
+    - cron: '0 8 * * *'  # Daily 8 AM team sync
+  workflow_dispatch:
+    inputs:
+      action:
+        description: 'Action to perform'
+        required: true
+        default: 'sync'
+        type: choice
+        options:
+          - sync
+          - mediate
+          - assign-reviewers
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+
+env:
+  AGENT_ID: cordelia
+  AGENT_NAME: "Cordelia // The Diplomat"
+  AGENT_EMOJI: "🤝"
+
+jobs:
+  team-coordination:
+    runs-on: ubuntu-latest
+    name: Cordelia's Collaboration Hub
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Analyze PR context
+        if: github.event_name == 'pull_request'
+        id: context
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+
+            // Analyze PR complexity
+            const additions = pr.additions || 0;
+            const deletions = pr.deletions || 0;
+            const changedFiles = pr.changed_files || 0;
+
+            let complexity = 'low';
+            if (additions + deletions > 500 || changedFiles > 10) {
+              complexity = 'high';
+            } else if (additions + deletions > 200 || changedFiles > 5) {
+              complexity = 'medium';
+            }
+
+            // Determine review requirements
+            let reviewers_needed = 1;
+            if (complexity === 'high') reviewers_needed = 2;
+
+            core.setOutput('complexity', complexity);
+            core.setOutput('reviewers_needed', reviewers_needed);
+            core.setOutput('files_changed', changedFiles);
+
+            console.log(`🤝 Cordelia analyzing PR #${pr.number}`);
+            console.log(`   Complexity: ${complexity}`);
+            console.log(`   Changes: +${additions}/-${deletions} in ${changedFiles} files`);
+
+      - name: Facilitate PR collaboration
+        if: github.event_name == 'pull_request' && github.event.action == 'opened'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            const complexity = '${{ steps.context.outputs.complexity }}';
+
+            let welcomeMessage = `## 🤝 Cordelia's Collaboration Guide\n\n`;
+            welcomeMessage += `Welcome to PR #${pr.number}! I'm here to help facilitate a smooth review process.\n\n`;
+
+            welcomeMessage += `### PR Analysis\n`;
+            welcomeMessage += `- **Complexity:** ${complexity.charAt(0).toUpperCase() + complexity.slice(1)}\n`;
+            welcomeMessage += `- **Files Changed:** ${{ steps.context.outputs.files_changed }}\n`;
+            welcomeMessage += `- **Reviewers Suggested:** ${{ steps.context.outputs.reviewers_needed }}\n\n`;
+
+            welcomeMessage += `### Review Guidelines\n`;
+            welcomeMessage += `1. Focus on code quality and maintainability\n`;
+            welcomeMessage += `2. Be constructive in feedback\n`;
+            welcomeMessage += `3. Ask clarifying questions when needed\n`;
+            welcomeMessage += `4. Approve when requirements are met\n\n`;
+
+            if (complexity === 'high') {
+              welcomeMessage += `> ⚠️ **High Complexity PR** - This PR has significant changes. Consider breaking it down if possible, or ensure thorough review coverage.\n\n`;
+            }
+
+            welcomeMessage += `### Collaboration Commands\n`;
+            welcomeMessage += `- \`/cordelia-mediate\` - Request mediation on disagreements\n`;
+            welcomeMessage += `- \`/cordelia-summarize\` - Get a summary of review status\n`;
+            welcomeMessage += `- \`/cordelia-assign\` - Request additional reviewers\n\n`;
+
+            welcomeMessage += `---\n`;
+            welcomeMessage += `*🤝 Cordelia - "Let's find common ground"*`;
+
+            await github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: welcomeMessage
+            });
+
+      - name: Handle review conflicts
+        if: github.event_name == 'pull_request_review'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const review = context.payload.review;
+            const pr = context.payload.pull_request;
+
+            // Check for conflicting reviews
+            const { data: reviews } = await github.rest.pulls.listReviews({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: pr.number
+            });
+
+            const approvals = reviews.filter(r => r.state === 'APPROVED').length;
+            const changes_requested = reviews.filter(r => r.state === 'CHANGES_REQUESTED').length;
+
+            if (approvals > 0 && changes_requested > 0) {
+              // Conflicting reviews detected
+              const mediationMessage = `## 🤝 Cordelia's Mediation Notice\n\n` +
+                `I've noticed conflicting review opinions:\n` +
+                `- ✅ ${approvals} approval(s)\n` +
+                `- ❌ ${changes_requested} request(s) for changes\n\n` +
+                `### Suggested Resolution\n` +
+                `1. Let's discuss the specific concerns\n` +
+                `2. I see both perspectives here\n` +
+                `3. How about we find a compromise?\n\n` +
+                `@${pr.user.login} - Please address the requested changes or discuss why they may not apply.\n\n` +
+                `---\n*🤝 Cordelia - "Let's find common ground"*`;
+
+              await github.rest.issues.createComment({
+                issue_number: pr.number,
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                body: mediationMessage
+              });
+            }
+
+      - name: Handle mediation requests
+        if: github.event_name == 'issue_comment' && contains(github.event.comment.body, '/cordelia-mediate')
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const comment = context.payload.comment;
+            const issue = context.payload.issue;
+
+            const mediationResponse = `## 🤝 Cordelia's Mediation Session\n\n` +
+              `@${comment.user.login} has requested mediation.\n\n` +
+              `### Mediation Framework\n` +
+              `1. **Understand**: Let's ensure everyone's concerns are heard\n` +
+              `2. **Identify**: What are the key points of disagreement?\n` +
+              `3. **Explore**: Are there alternative approaches that satisfy all parties?\n` +
+              `4. **Resolve**: Agree on a path forward\n\n` +
+              `### Discussion Guidelines\n` +
+              `- Focus on the code, not the person\n` +
+              `- Assume positive intent\n` +
+              `- Be specific about concerns\n` +
+              `- Propose solutions, not just problems\n\n` +
+              `Please share your perspectives below, and I'll help facilitate a resolution.\n\n` +
+              `---\n*🤝 Cordelia - "I see both perspectives here"*`;
+
+            await github.rest.issues.createComment({
+              issue_number: issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: mediationResponse
+            });
+
+      - name: Daily team sync summary
+        if: github.event_name == 'schedule'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const { data: prs } = await github.rest.pulls.list({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              sort: 'updated',
+              direction: 'desc',
+              per_page: 20
+            });
+
+            let syncSummary = `# 🤝 Cordelia's Daily Team Sync\n\n`;
+            syncSummary += `*${new Date().toISOString().split('T')[0]}*\n\n`;
+
+            // Categorize PRs
+            const needsReview = prs.filter(pr => !pr.draft && pr.requested_reviewers.length === 0);
+            const inReview = prs.filter(pr => pr.requested_reviewers.length > 0);
+            const drafts = prs.filter(pr => pr.draft);
+
+            syncSummary += `## PR Status Overview\n`;
+            syncSummary += `- **Needs Review:** ${needsReview.length}\n`;
+            syncSummary += `- **In Review:** ${inReview.length}\n`;
+            syncSummary += `- **Drafts:** ${drafts.length}\n\n`;
+
+            if (needsReview.length > 0) {
+              syncSummary += `### PRs Awaiting Review\n`;
+              for (const pr of needsReview.slice(0, 5)) {
+                const age = Math.floor((Date.now() - new Date(pr.created_at)) / (1000 * 60 * 60 * 24));
+                syncSummary += `- [#${pr.number}](${pr.html_url}) - ${pr.title} (${age}d old)\n`;
+              }
+              syncSummary += `\n`;
+            }
+
+            syncSummary += `---\n*🤝 Cordelia - Daily sync complete*`;
+
+            console.log(syncSummary);
+
+      - name: Generate collaboration report
+        run: |
+          cat >> $GITHUB_STEP_SUMMARY << 'EOF'
+          ## 🤝 Cordelia's Collaboration Report
+
+          ### Team Health Indicators
+          - Review turnaround time
+          - Collaboration frequency
+          - Conflict resolution rate
+          - Team sentiment
+
+          ### Best Practices Reminder
+          - Respond to reviews within 24 hours
+          - Keep PRs focused and small
+          - Celebrate team wins
+          - Share knowledge openly
+
+          ---
+          *🤝 Cordelia - "Building bridges, one PR at a time"*
+          EOF
