@@ -130,3 +130,105 @@
 - name: "breaking change"
   color: "DC2626"
   description: "Breaking change that requires migration"
+# Auto-labeling configuration for issues based on title/body keywords
+# Frontend-focused labels for React/Next.js application
+
+- label: "bug"
+  keywords:
+    - bug
+    - error
+    - issue
+    - crash
+    - broken
+    - not working
+    - fails
+
+- label: "feature"
+  keywords:
+    - feature
+    - enhancement
+    - new
+    - add
+    - implement
+
+- label: "documentation"
+  keywords:
+    - docs
+    - documentation
+    - readme
+    - guide
+    - tutorial
+
+- label: "ui/ux"
+  keywords:
+    - ui
+    - ux
+    - design
+    - interface
+    - layout
+    - style
+    - css
+
+- label: "component"
+  keywords:
+    - component
+    - react component
+    - tsx
+    - jsx
+
+- label: "api"
+  keywords:
+    - api
+    - endpoint
+    - route
+    - request
+    - response
+
+- label: "performance"
+  keywords:
+    - performance
+    - slow
+    - optimization
+    - speed
+    - latency
+
+- label: "testing"
+  keywords:
+    - test
+    - testing
+    - jest
+    - spec
+    - coverage
+
+- label: "dependencies"
+  keywords:
+    - dependency
+    - dependencies
+    - npm
+    - package
+    - upgrade
+    - update package
+
+- label: "ci/cd"
+  keywords:
+    - ci
+    - cd
+    - pipeline
+    - workflow
+    - github actions
+    - deployment
+
+- label: "accessibility"
+  keywords:
+    - a11y
+    - accessibility
+    - aria
+    - screen reader
+    - keyboard
+
+- label: "security"
+  keywords:
+    - security
+    - vulnerability
+    - cve
+    - exploit
