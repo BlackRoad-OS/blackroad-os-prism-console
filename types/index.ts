@@ -23,3 +23,14 @@ export interface DeploySummary {
   lastDeploy: string;
   artifact: string;
 }
+
+export interface CodexPrompt {
+  repo: string;
+  agent_class: string;
+  purpose: string;
+  prompt: string;
+  inputs: string[];
+  outputs: string[];
+  routes: string[];
+  tags: string[];
+}
