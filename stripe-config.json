@@ -1,0 +1,26 @@
+{
+  "repo": "BlackRoad-OS/blackroad-os-prism-console",
+  "products": [
+    {
+      "name": "blackroad-os-prism-console - Basic",
+      "price": 900,
+      "interval": "month"
+    },
+    {
+      "name": "blackroad-os-prism-console - Pro",
+      "price": 2900,
+      "interval": "month"
+    },
+    {
+      "name": "blackroad-os-prism-console - Enterprise",
+      "price": 9900,
+      "interval": "month"
+    }
+  ],
+  "webhooks": [
+    "checkout.session.completed",
+    "customer.subscription.created",
+    "customer.subscription.updated",
+    "invoice.paid"
+  ]
+}
