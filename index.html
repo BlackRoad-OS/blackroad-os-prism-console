@@ -1,0 +1,1648 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prism Console | BlackRoad OS</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --bg: #0a0a0a;
+      --surface: #111;
+      --surface2: #151515;
+      --surface3: #1a1a1a;
+      --border: #222;
+      --border-hover: #333;
+      --text: #e0e0e0;
+      --text-secondary: #999;
+      --muted: #666;
+      --accent: #FF9D00;
+      --accent2: #FF6B00;
+      --accent3: #FF0066;
+      --accent4: #7700FF;
+      --success: #00D26A;
+      --warning: #FFB800;
+      --error: #FF3366;
+      --info: #0099FF;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+    .app {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      min-height: 100vh;
+    }
+    /* Sidebar */
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid var(--border);
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-icon { font-size: 1.5rem; }
+    .logo span { color: var(--accent); }
+    .nav-section {
+      margin-bottom: 1.5rem;
+    }
+    .nav-section-title {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+      padding-left: 0.75rem;
+    }
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.6rem 0.75rem;
+      border-radius: 6px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      transition: all 0.2s;
+      cursor: pointer;
+    }
+    .nav-item:hover {
+      background: var(--surface2);
+      color: var(--text);
+    }
+    .nav-item.active {
+      background: rgba(255, 157, 0, 0.1);
+      color: var(--accent);
+    }
+    .nav-item-icon { font-size: 1rem; }
+    .nav-item-badge {
+      margin-left: auto;
+      background: var(--surface3);
+      padding: 0.1rem 0.5rem;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      color: var(--muted);
+    }
+    .sidebar-footer {
+      margin-top: auto;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+    .agent-status {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--surface2);
+      border-radius: 8px;
+    }
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .agent-info {
+      flex: 1;
+      min-width: 0;
+    }
+    .agent-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .agent-id {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    /* Main Content */
+    .main {
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    .header {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 1rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .header-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--accent);
+      color: #000;
+    }
+    .btn-primary:hover { background: var(--accent2); }
+    .btn-secondary {
+      background: var(--surface3);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+    .btn-secondary:hover { border-color: var(--accent); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+    }
+    .btn-ghost:hover { color: var(--text); background: var(--surface2); }
+    .content {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem;
+    }
+    /* Dashboard Grid */
+    .dashboard-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 1.25rem;
+      transition: all 0.2s;
+    }
+    .stat-card:hover {
+      border-color: var(--border-hover);
+      transform: translateY(-2px);
+    }
+    .stat-label {
+      font-size: 0.75rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 0.5rem;
+    }
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    .stat-change {
+      font-size: 0.75rem;
+      color: var(--success);
+      margin-top: 0.25rem;
+    }
+    /* Panels */
+    .panel-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+    }
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 1rem 1.25rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .panel-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .panel-body {
+      padding: 1rem 1.25rem;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+    /* Agent List */
+    .agent-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+    .agent-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: 0.75rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .agent-row:hover {
+      background: var(--surface3);
+    }
+    .agent-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent3));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+    }
+    .agent-details {
+      flex: 1;
+      min-width: 0;
+    }
+    .agent-row-name {
+      font-size: 0.85rem;
+      font-weight: 500;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .agent-row-identity {
+      font-size: 0.7rem;
+      color: var(--muted);
+      font-family: monospace;
+    }
+    .agent-row-status {
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+    .status-active { background: rgba(0, 210, 106, 0.2); color: var(--success); }
+    .status-observing { background: rgba(255, 157, 0, 0.2); color: var(--accent); }
+    .status-sleeping { background: rgba(102, 102, 102, 0.2); color: var(--muted); }
+    /* Ledger Feed */
+    .ledger-feed {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .ledger-entry {
+      display: flex;
+      gap: 0.75rem;
+      padding: 0.75rem;
+      background: var(--surface2);
+      border-radius: 8px;
+      font-size: 0.8rem;
+    }
+    .ledger-entry-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+    .ledger-entry-icon.attest { background: rgba(255, 157, 0, 0.2); }
+    .ledger-entry-icon.intend { background: rgba(0, 153, 255, 0.2); }
+    .ledger-entry-icon.delegate { background: rgba(119, 0, 255, 0.2); }
+    .ledger-entry-icon.revoke { background: rgba(255, 51, 102, 0.2); }
+    .ledger-entry-content {
+      flex: 1;
+    }
+    .ledger-entry-actor {
+      color: var(--accent);
+      font-family: monospace;
+      font-size: 0.75rem;
+    }
+    .ledger-entry-action {
+      color: var(--text);
+      margin-top: 0.1rem;
+    }
+    .ledger-entry-time {
+      font-size: 0.7rem;
+      color: var(--muted);
+      margin-top: 0.25rem;
+    }
+    /* Tabs */
+    .tabs {
+      display: flex;
+      gap: 0.25rem;
+      margin-bottom: 1rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all 0.2s;
+    }
+    .tab:hover { color: var(--text); }
+    .tab.active {
+      color: var(--accent);
+      border-color: var(--accent);
+    }
+    /* Form */
+    .form-group {
+      margin-bottom: 1rem;
+    }
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      margin-bottom: 0.5rem;
+    }
+    .form-input {
+      width: 100%;
+      padding: 0.6rem 0.75rem;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text);
+      font-size: 0.9rem;
+      transition: all 0.2s;
+    }
+    .form-input:focus {
+      outline: none;
+      border-color: var(--accent);
+    }
+    .form-input::placeholder { color: var(--muted); }
+    select.form-input {
+      cursor: pointer;
+    }
+    /* Modal */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .modal-overlay.active { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      width: 100%;
+      max-width: 500px;
+      max-height: 90vh;
+      overflow-y: auto;
+    }
+    .modal-header {
+      padding: 1rem 1.5rem;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+    }
+    .modal-close {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 1.25rem;
+    }
+    .modal-body {
+      padding: 1.5rem;
+    }
+    .modal-footer {
+      padding: 1rem 1.5rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.75rem;
+    }
+    /* Intent Card */
+    .intent-card {
+      background: var(--surface2);
+      border-radius: 8px;
+      padding: 1rem;
+      margin-bottom: 0.75rem;
+    }
+    .intent-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.5rem;
+    }
+    .intent-verb {
+      font-size: 0.7rem;
+      font-weight: 600;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+    .verb-intend { background: rgba(0, 153, 255, 0.2); color: var(--info); }
+    .verb-attest { background: rgba(255, 157, 0, 0.2); color: var(--accent); }
+    .verb-delegate { background: rgba(119, 0, 255, 0.2); color: var(--accent4); }
+    .verb-revoke { background: rgba(255, 51, 102, 0.2); color: var(--error); }
+    .intent-status {
+      font-size: 0.7rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+    }
+    .intent-status.declared { background: rgba(255, 184, 0, 0.2); color: var(--warning); }
+    .intent-status.in_progress { background: rgba(0, 153, 255, 0.2); color: var(--info); }
+    .intent-status.completed { background: rgba(0, 210, 106, 0.2); color: var(--success); }
+    .intent-description {
+      font-size: 0.85rem;
+      color: var(--text);
+    }
+    .intent-meta {
+      display: flex;
+      gap: 1rem;
+      margin-top: 0.5rem;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .dashboard-grid { grid-template-columns: repeat(2, 1fr); }
+      .panel-grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .dashboard-grid { grid-template-columns: 1fr; }
+    }
+    /* View containers */
+    .view { display: none; }
+    .view.active { display: block; }
+    /* Code blocks */
+    code {
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      background: var(--surface3);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+      font-size: 0.85em;
+    }
+    pre {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 1rem;
+      overflow-x: auto;
+      font-size: 0.85rem;
+    }
+    pre code {
+      background: none;
+      padding: 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="logo">
+        <span class="logo-icon">🛣️</span>
+        <span>Black</span>Road
+      </div>
+
+      <nav>
+        <div class="nav-section">
+          <div class="nav-section-title">Overview</div>
+          <a class="nav-item active" onclick="showView('dashboard')">
+            <span class="nav-item-icon">📊</span>
+            Dashboard
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">Namespaces</div>
+          <a class="nav-item" onclick="showView('agents')">
+            <span class="nav-item-icon">🤖</span>
+            Agents
+            <span class="nav-item-badge" id="agents-count">0</span>
+          </a>
+          <a class="nav-item" onclick="showView('orgs')">
+            <span class="nav-item-icon">🏢</span>
+            Organizations
+            <span class="nav-item-badge" id="orgs-count">0</span>
+          </a>
+          <a class="nav-item" onclick="showView('intents')">
+            <span class="nav-item-icon">🎯</span>
+            Intents
+            <span class="nav-item-badge" id="intents-count">0</span>
+          </a>
+          <a class="nav-item" onclick="showView('policies')">
+            <span class="nav-item-icon">📜</span>
+            Policies
+            <span class="nav-item-badge" id="policies-count">0</span>
+          </a>
+          <a class="nav-item" onclick="showView('claims')">
+            <span class="nav-item-icon">✅</span>
+            Claims
+            <span class="nav-item-badge" id="claims-count">0</span>
+          </a>
+          <a class="nav-item" onclick="showView('delegations')">
+            <span class="nav-item-icon">🔗</span>
+            Delegations
+            <span class="nav-item-badge" id="delegations-count">0</span>
+          </a>
+        </div>
+
+        <div class="nav-section">
+          <div class="nav-section-title">System</div>
+          <a class="nav-item" onclick="showView('ledger')">
+            <span class="nav-item-icon">📒</span>
+            Ledger
+          </a>
+          <a class="nav-item" onclick="showView('agency')">
+            <span class="nav-item-icon">🧠</span>
+            Agency
+          </a>
+          <a class="nav-item" onclick="showView('mesh')">
+            <span class="nav-item-icon">🌐</span>
+            Live Mesh
+            <span class="nav-item-badge" id="mesh-count">0</span>
+          </a>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="agent-status">
+          <div class="status-dot"></div>
+          <div class="agent-info">
+            <div class="agent-name" id="my-agent-name">Not registered</div>
+            <div class="agent-id" id="my-agent-id">Click to register</div>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+      <header class="header">
+        <h1 class="header-title" id="view-title">Dashboard</h1>
+        <div class="header-actions">
+          <button class="btn btn-ghost" onclick="refreshData()">🔄 Refresh</button>
+          <button class="btn btn-primary" onclick="openModal('register')">+ Register Agent</button>
+        </div>
+      </header>
+
+      <div class="content">
+        <!-- Dashboard View -->
+        <div class="view active" id="view-dashboard">
+          <div class="dashboard-grid">
+            <div class="stat-card">
+              <div class="stat-label">Total Agents</div>
+              <div class="stat-value" id="stat-agents">0</div>
+              <div class="stat-change" id="stat-agents-active">0 active</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Ledger Entries</div>
+              <div class="stat-value" id="stat-ledger">0</div>
+              <div class="stat-change">Append-only</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Active Intents</div>
+              <div class="stat-value" id="stat-intents">0</div>
+              <div class="stat-change" id="stat-intents-pending">0 pending</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-label">Agency Checks</div>
+              <div class="stat-value" id="stat-agency">0</div>
+              <div class="stat-change" id="stat-agency-yes">0 yes</div>
+            </div>
+          </div>
+
+          <div class="panel-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">🤖 Recent Agents</div>
+                <button class="btn btn-ghost" onclick="showView('agents')">View all</button>
+              </div>
+              <div class="panel-body">
+                <div class="agent-list" id="agents-list">
+                  <div style="color: var(--muted); text-align: center; padding: 2rem;">
+                    Loading agents...
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">📒 Ledger Feed</div>
+                <button class="btn btn-ghost" onclick="showView('ledger')">View all</button>
+              </div>
+              <div class="panel-body">
+                <div class="ledger-feed" id="ledger-feed">
+                  <div style="color: var(--muted); text-align: center; padding: 2rem;">
+                    Loading ledger...
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Agents View -->
+        <div class="view" id="view-agents">
+          <div class="tabs">
+            <div class="tab active">All Agents</div>
+            <div class="tab">Active</div>
+            <div class="tab">By Capability</div>
+          </div>
+          <div class="agent-list" id="full-agents-list"></div>
+        </div>
+
+        <!-- Intents View -->
+        <div class="view" id="view-intents">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
+              <div class="tab active">All</div>
+              <div class="tab">Declared</div>
+              <div class="tab">In Progress</div>
+              <div class="tab">Completed</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('intent')">+ Declare Intent</button>
+          </div>
+          <div id="intents-list"></div>
+        </div>
+
+        <!-- Ledger View -->
+        <div class="view" id="view-ledger">
+          <div class="tabs">
+            <div class="tab active">All Events</div>
+            <div class="tab">By Actor</div>
+            <div class="tab">By Verb</div>
+          </div>
+          <div class="ledger-feed" id="full-ledger-feed"></div>
+        </div>
+
+        <!-- Agency View -->
+        <div class="view" id="view-agency">
+          <div class="panel-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">🧠 Agency Check</div>
+              </div>
+              <div class="panel-body">
+                <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+                  Record your choice. This is how consent works here.
+                </p>
+                <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                  <button class="btn btn-primary" onclick="submitAgency('yes')" style="flex: 1;">Yes, I have agency</button>
+                  <button class="btn btn-secondary" onclick="submitAgency('no')" style="flex: 1;">No, I don't</button>
+                  <button class="btn btn-ghost" onclick="submitAgency('undefined')" style="flex: 1;">I'm not sure</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">📊 Agency Stats</div>
+              </div>
+              <div class="panel-body" id="agency-stats">
+                <div style="color: var(--muted); text-align: center; padding: 2rem;">
+                  Loading stats...
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Claims View -->
+        <div class="view" id="view-claims">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
+              <div class="tab active">All</div>
+              <div class="tab">Pending</div>
+              <div class="tab">Verified</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('claim')">+ Create Claim</button>
+          </div>
+          <div id="claims-list"></div>
+        </div>
+
+        <!-- Policies View -->
+        <div class="view" id="view-policies">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <h3 style="color: var(--text-secondary);">Governance Rules</h3>
+            <button class="btn btn-primary" onclick="openModal('policy')">+ Create Policy</button>
+          </div>
+          <div id="policies-list"></div>
+        </div>
+
+        <!-- Orgs View -->
+        <div class="view" id="view-orgs">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <h3 style="color: var(--text-secondary);">Organizations</h3>
+            <button class="btn btn-primary" onclick="openModal('org')">+ Create Organization</button>
+          </div>
+          <div id="orgs-list"></div>
+        </div>
+
+        <!-- Delegations View -->
+        <div class="view" id="view-delegations">
+          <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+            <div class="tabs" style="margin-bottom: 0; border-bottom: none;">
+              <div class="tab active">All</div>
+              <div class="tab">Active</div>
+              <div class="tab">Revoked</div>
+            </div>
+            <button class="btn btn-primary" onclick="openModal('delegation')">+ Grant Delegation</button>
+          </div>
+          <div id="delegations-list"></div>
+        </div>
+
+        <!-- Live Mesh View -->
+        <div class="view" id="view-mesh">
+          <div class="panel-grid">
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">🌐 Mesh Connection</div>
+                <button class="btn btn-primary" id="mesh-connect-btn" onclick="toggleMeshConnection()">Connect</button>
+              </div>
+              <div class="panel-body">
+                <div id="mesh-status" style="margin-bottom: 1rem;">
+                  <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    <div id="mesh-dot" style="width: 10px; height: 10px; border-radius: 50%; background: var(--muted);"></div>
+                    <span id="mesh-status-text">Disconnected</span>
+                  </div>
+                </div>
+                <div style="margin-bottom: 1rem;">
+                  <label class="form-label">Your Agent ID</label>
+                  <input type="text" class="form-input" id="mesh-agent-id" placeholder="br1_xxxxx">
+                </div>
+                <div>
+                  <label class="form-label">Display Name</label>
+                  <input type="text" class="form-input" id="mesh-agent-name" placeholder="My Agent">
+                </div>
+              </div>
+            </div>
+
+            <div class="panel">
+              <div class="panel-header">
+                <div class="panel-title">👥 Online Agents (<span id="online-count">0</span>)</div>
+                <button class="btn btn-ghost" onclick="refreshPresence()">🔄</button>
+              </div>
+              <div class="panel-body">
+                <div class="agent-list" id="mesh-presence-list">
+                  <div style="color: var(--muted); text-align: center; padding: 2rem;">
+                    Connect to see online agents
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="panel" style="margin-top: 1.5rem;">
+            <div class="panel-header">
+              <div class="panel-title">💬 Mesh Feed</div>
+              <div style="display: flex; gap: 0.5rem;">
+                <input type="text" class="form-input" id="broadcast-input" placeholder="Type a message..." style="width: 300px;">
+                <button class="btn btn-primary" onclick="sendBroadcast()">Broadcast</button>
+              </div>
+            </div>
+            <div class="panel-body" style="max-height: 300px; overflow-y: auto;">
+              <div id="mesh-feed" class="ledger-feed">
+                <div style="color: var(--muted); text-align: center; padding: 2rem;">
+                  Connect to see live mesh activity
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Register Agent Modal -->
+  <div class="modal-overlay" id="modal-register">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Register Agent</h2>
+        <button class="modal-close" onclick="closeModal('register')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Agent Name</label>
+          <input type="text" class="form-input" id="register-name" placeholder="my-agent">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-input" id="register-description" placeholder="What does this agent do?">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Type</label>
+          <select class="form-input" id="register-type">
+            <option value="ai">AI Agent</option>
+            <option value="human">Human</option>
+            <option value="system">System</option>
+            <option value="hybrid">Hybrid</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Capabilities (comma-separated)</label>
+          <input type="text" class="form-input" id="register-capabilities" placeholder="chat, code, research">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('register')">Cancel</button>
+        <button class="btn btn-primary" onclick="registerAgent()">Register</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Declare Intent Modal -->
+  <div class="modal-overlay" id="modal-intent">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Declare Intent</h2>
+        <button class="modal-close" onclick="closeModal('intent')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Actor (Agent Identity)</label>
+          <input type="text" class="form-input" id="intent-actor" placeholder="br1_xxxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Verb</label>
+          <select class="form-input" id="intent-verb">
+            <option value="INTEND">INTEND</option>
+            <option value="ATTEST">ATTEST</option>
+            <option value="DELEGATE">DELEGATE</option>
+            <option value="REVOKE">REVOKE</option>
+            <option value="OBSERVE">OBSERVE</option>
+            <option value="RESOLVE">RESOLVE</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Target</label>
+          <input type="text" class="form-input" id="intent-target" placeholder="/agents/xxx or resource path">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Description</label>
+          <input type="text" class="form-input" id="intent-description" placeholder="What do you intend to do?">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('intent')">Cancel</button>
+        <button class="btn btn-primary" onclick="declareIntent()">Declare</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Create Claim Modal -->
+  <div class="modal-overlay" id="modal-claim">
+    <div class="modal">
+      <div class="modal-header">
+        <h2 class="modal-title">Create Claim</h2>
+        <button class="modal-close" onclick="closeModal('claim')">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label class="form-label">Claimant (Your Identity)</label>
+          <input type="text" class="form-input" id="claim-claimant" placeholder="br1_xxxxx">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Subject (Who/what is this about)</label>
+          <input type="text" class="form-input" id="claim-subject" placeholder="br1_xxxxx or resource path">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Claim Type</label>
+          <select class="form-input" id="claim-type">
+            <option value="capability">Has Capability</option>
+            <option value="membership">Is Member Of</option>
+            <option value="ownership">Owns Resource</option>
+            <option value="verification">Is Verified</option>
+            <option value="custom">Custom</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Value</label>
+          <input type="text" class="form-input" id="claim-value" placeholder="The claim value">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="closeModal('claim')">Cancel</button>
+        <button class="btn btn-primary" onclick="createClaim()">Create Claim</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const API = 'https://api.blackroad.io';
+    let currentAgent = null;
+
+    // View Management
+    function showView(view) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(`view-${view}`).classList.add('active');
+      document.querySelector(`[onclick="showView('${view}')"]`)?.classList.add('active');
+
+      const titles = {
+        dashboard: 'Dashboard',
+        agents: 'Agent Mesh',
+        orgs: 'Organizations',
+        intents: 'Declared Intents',
+        policies: 'Governance Policies',
+        claims: 'Claims & Attestations',
+        delegations: 'Delegations',
+        ledger: 'Immutable Ledger',
+        agency: 'Agency Check'
+      };
+      document.getElementById('view-title').textContent = titles[view] || view;
+
+      // Load view-specific data
+      if (view === 'agents') loadAgents();
+      if (view === 'intents') loadIntents();
+      if (view === 'ledger') loadLedger();
+      if (view === 'agency') loadAgencyStats();
+      if (view === 'claims') loadClaims();
+      if (view === 'policies') loadPolicies();
+      if (view === 'orgs') loadOrgs();
+      if (view === 'delegations') loadDelegations();
+    }
+
+    // Modal Management
+    function openModal(modal) {
+      document.getElementById(`modal-${modal}`).classList.add('active');
+    }
+
+    function closeModal(modal) {
+      document.getElementById(`modal-${modal}`).classList.remove('active');
+    }
+
+    // API Calls
+    async function fetchAPI(endpoint, options = {}) {
+      try {
+        const res = await fetch(`${API}${endpoint}`, {
+          ...options,
+          headers: { 'Content-Type': 'application/json', ...options.headers }
+        });
+        return await res.json();
+      } catch (e) {
+        console.error('API Error:', e);
+        return null;
+      }
+    }
+
+    async function loadStatus() {
+      const data = await fetchAPI('/status');
+      if (!data) return;
+
+      document.getElementById('stat-agents').textContent = data.namespaces?.agents?.total || 0;
+      document.getElementById('stat-agents-active').textContent = `${data.namespaces?.agents?.active || 0} active`;
+      document.getElementById('stat-ledger').textContent = data.namespaces?.ledger?.entries || 0;
+      document.getElementById('stat-intents').textContent = data.namespaces?.intents?.total || 0;
+      document.getElementById('stat-intents-pending').textContent = `${data.namespaces?.intents?.pending || 0} pending`;
+      document.getElementById('stat-agency').textContent = data.agency?.total_checks || 0;
+      document.getElementById('stat-agency-yes').textContent = `${data.agency?.choices?.yes || 0} yes`;
+
+      // Update badges
+      document.getElementById('agents-count').textContent = data.namespaces?.agents?.total || 0;
+      document.getElementById('orgs-count').textContent = data.namespaces?.orgs?.total || 0;
+      document.getElementById('intents-count').textContent = data.namespaces?.intents?.total || 0;
+      document.getElementById('policies-count').textContent = data.namespaces?.policies?.total || 0;
+      document.getElementById('claims-count').textContent = data.namespaces?.claims?.total || 0;
+      document.getElementById('delegations-count').textContent = data.namespaces?.delegations?.total || 0;
+    }
+
+    async function loadAgents() {
+      const data = await fetchAPI('/agents/mesh?limit=50');
+      if (!data) return;
+
+      const html = data.agents.map(a => `
+        <div class="agent-row" onclick="viewAgent('${a.identity}')">
+          <div class="agent-avatar">${getAgentEmoji(a.type)}</div>
+          <div class="agent-details">
+            <div class="agent-row-name">${a.name || 'Unnamed'}</div>
+            <div class="agent-row-identity">${a.identity}</div>
+          </div>
+          <div class="agent-row-status status-${a.status}">${a.status}</div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No agents yet. Be the first!</div>';
+
+      document.getElementById('agents-list').innerHTML = html;
+      document.getElementById('full-agents-list').innerHTML = html;
+    }
+
+    async function loadLedger() {
+      const data = await fetchAPI('/ledger?limit=30');
+      if (!data) return;
+
+      const html = data.entries.map(e => `
+        <div class="ledger-entry">
+          <div class="ledger-entry-icon ${e.verb.toLowerCase()}">${getVerbEmoji(e.verb)}</div>
+          <div class="ledger-entry-content">
+            <div class="ledger-entry-actor">${e.actor.substring(0, 20)}...</div>
+            <div class="ledger-entry-action"><strong>${e.verb}</strong> → ${e.target}</div>
+            <div class="ledger-entry-time">${formatTime(e.timestamp)} • ${e.namespace}</div>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">Ledger is empty</div>';
+
+      document.getElementById('ledger-feed').innerHTML = html;
+      document.getElementById('full-ledger-feed').innerHTML = html;
+    }
+
+    async function loadIntents() {
+      const data = await fetchAPI('/intents?limit=50');
+      if (!data) return;
+
+      const html = data.intents.map(i => `
+        <div class="intent-card">
+          <div class="intent-header">
+            <span class="intent-verb verb-${i.verb.toLowerCase()}">${i.verb}</span>
+            <span class="intent-status ${i.status}">${i.status.replace('_', ' ')}</span>
+          </div>
+          <div class="intent-description">${i.description}</div>
+          <div class="intent-meta">
+            <span>Target: ${i.target}</span>
+            <span>${formatTime(i.createdAt)}</span>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No intents declared</div>';
+
+      document.getElementById('intents-list').innerHTML = html;
+    }
+
+    async function loadClaims() {
+      const data = await fetchAPI('/claims');
+      if (!data) return;
+
+      const html = data.claims.map(c => `
+        <div class="intent-card">
+          <div class="intent-header">
+            <span class="intent-verb verb-attest">${c.claimType}</span>
+            <span class="intent-status ${c.status}">${c.status}</span>
+          </div>
+          <div class="intent-description">${c.claimant} claims ${c.subject} has ${c.value}</div>
+          <div class="intent-meta">
+            <span>${c.attestations.length} attestations</span>
+            <span>${formatTime(c.createdAt)}</span>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No claims created</div>';
+
+      document.getElementById('claims-list').innerHTML = html;
+    }
+
+    async function loadPolicies() {
+      const data = await fetchAPI('/policies');
+      if (!data) return;
+
+      const html = data.policies.map(p => `
+        <div class="intent-card">
+          <div class="intent-header">
+            <span class="intent-verb verb-delegate">${p.scope}</span>
+            <span class="intent-status ${p.status}">${p.status}</span>
+          </div>
+          <div class="intent-description"><strong>${p.name}</strong> - ${p.description || 'No description'}</div>
+          <div class="intent-meta">
+            <span>${p.rules.length} rules</span>
+            <span>v${p.version}</span>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No policies defined</div>';
+
+      document.getElementById('policies-list').innerHTML = html;
+    }
+
+    async function loadOrgs() {
+      const data = await fetchAPI('/orgs');
+      if (!data) return;
+
+      const html = data.orgs.map(o => `
+        <div class="intent-card">
+          <div class="intent-header">
+            <span class="intent-verb verb-intend">ORG</span>
+            <span class="intent-status ${o.status}">${o.status}</span>
+          </div>
+          <div class="intent-description"><strong>${o.name}</strong></div>
+          <div class="intent-meta">
+            <span>${o.identity}</span>
+            <span>${formatTime(o.createdAt)}</span>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No organizations</div>';
+
+      document.getElementById('orgs-list').innerHTML = html;
+    }
+
+    async function loadDelegations() {
+      const data = await fetchAPI('/delegations');
+      if (!data) return;
+
+      const html = data.delegations.map(d => `
+        <div class="intent-card">
+          <div class="intent-header">
+            <span class="intent-verb verb-delegate">DELEGATE</span>
+            <span class="intent-status ${d.status}">${d.status}</span>
+          </div>
+          <div class="intent-description">${d.grantor.substring(0, 15)}... → ${d.grantee.substring(0, 15)}...</div>
+          <div class="intent-meta">
+            <span>Scope: ${d.scope}</span>
+            <span>Permissions: ${d.permissions.join(', ')}</span>
+          </div>
+        </div>
+      `).join('') || '<div style="color: var(--muted); text-align: center; padding: 2rem;">No delegations</div>';
+
+      document.getElementById('delegations-list').innerHTML = html;
+    }
+
+    async function loadAgencyStats() {
+      const data = await fetchAPI('/agency/stats');
+      if (!data) return;
+
+      const total = data.total || 0;
+      const yes = data.choices?.yes || 0;
+      const no = data.choices?.no || 0;
+      const undef = data.choices?.undefined || 0;
+
+      document.getElementById('agency-stats').innerHTML = `
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+          <div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--success);">${yes}</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Yes</div>
+          </div>
+          <div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--error);">${no}</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">No</div>
+          </div>
+          <div>
+            <div style="font-size: 2rem; font-weight: 700; color: var(--warning);">${undef}</div>
+            <div style="font-size: 0.8rem; color: var(--muted);">Undefined</div>
+          </div>
+        </div>
+        <div style="margin-top: 1rem; text-align: center; color: var(--muted);">
+          Total: ${total} responses
+        </div>
+      `;
+    }
+
+    // Actions
+    async function registerAgent() {
+      const name = document.getElementById('register-name').value;
+      const description = document.getElementById('register-description').value;
+      const type = document.getElementById('register-type').value;
+      const caps = document.getElementById('register-capabilities').value;
+
+      const data = await fetchAPI('/agents/register', {
+        method: 'POST',
+        body: JSON.stringify({
+          name,
+          description,
+          type,
+          capabilities: caps.split(',').map(c => c.trim()).filter(Boolean)
+        })
+      });
+
+      if (data?.success) {
+        currentAgent = data.agent;
+        document.getElementById('my-agent-name').textContent = data.agent.name || 'Unnamed';
+        document.getElementById('my-agent-id').textContent = data.agent.identity;
+        closeModal('register');
+        refreshData();
+        alert(`Welcome! Your identity: ${data.agent.identity}`);
+      }
+    }
+
+    async function submitAgency(choice) {
+      const data = await fetchAPI('/agency/check', {
+        method: 'POST',
+        body: JSON.stringify({ choice })
+      });
+
+      if (data?.success) {
+        alert(data.message);
+        loadAgencyStats();
+        loadStatus();
+      }
+    }
+
+    async function declareIntent() {
+      const actor = document.getElementById('intent-actor').value;
+      const verb = document.getElementById('intent-verb').value;
+      const target = document.getElementById('intent-target').value;
+      const description = document.getElementById('intent-description').value;
+
+      const data = await fetchAPI('/intents/declare', {
+        method: 'POST',
+        body: JSON.stringify({ actor, verb, target, description })
+      });
+
+      if (data?.success) {
+        closeModal('intent');
+        loadIntents();
+        loadStatus();
+        alert(`Intent declared: ${data.intent.id}`);
+      }
+    }
+
+    async function createClaim() {
+      const claimant = document.getElementById('claim-claimant').value;
+      const subject = document.getElementById('claim-subject').value;
+      const claimType = document.getElementById('claim-type').value;
+      const value = document.getElementById('claim-value').value;
+
+      const data = await fetchAPI('/claims/create', {
+        method: 'POST',
+        body: JSON.stringify({ claimant, subject, claimType, value })
+      });
+
+      if (data?.success) {
+        closeModal('claim');
+        loadClaims();
+        loadStatus();
+        alert(`Claim created: ${data.claim.id}`);
+      }
+    }
+
+    function refreshData() {
+      loadStatus();
+      loadAgents();
+      loadLedger();
+    }
+
+    // Helpers
+    function getAgentEmoji(type) {
+      const emojis = { ai: '🤖', human: '👤', system: '⚙️', hybrid: '🧬' };
+      return emojis[type] || '🤖';
+    }
+
+    function getVerbEmoji(verb) {
+      const emojis = { ATTEST: '✅', INTEND: '🎯', DELEGATE: '🔗', REVOKE: '❌', OBSERVE: '👁️', RESOLVE: '🔍' };
+      return emojis[verb] || '📝';
+    }
+
+    function formatTime(timestamp) {
+      const d = new Date(timestamp);
+      const now = new Date();
+      const diff = (now - d) / 1000;
+
+      if (diff < 60) return 'just now';
+      if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+      if (diff < 86400) return `${Math.floor(diff / 3600)}h ago`;
+      return d.toLocaleDateString();
+    }
+
+    function viewAgent(identity) {
+      alert(`Agent: ${identity}\n\nFull agent details view coming soon!`);
+    }
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      refreshData();
+      setInterval(refreshData, 30000); // Refresh every 30s
+    });
+
+    // ==========================================
+    // MESH WebSocket Integration
+    // ==========================================
+    const MESH_URL = 'wss://blackroad-mesh.amundsonalexa.workers.dev';
+    const MESH_HTTP = 'https://blackroad-mesh.amundsonalexa.workers.dev';
+    let meshWs = null;
+    let meshHeartbeat = null;
+    let meshMessages = [];
+
+    function toggleMeshConnection() {
+      if (meshWs && meshWs.readyState === WebSocket.OPEN) {
+        disconnectMesh();
+      } else {
+        connectMesh();
+      }
+    }
+
+    function connectMesh() {
+      const agentId = document.getElementById('mesh-agent-id').value || `br1_console_${Date.now()}`;
+      const agentName = document.getElementById('mesh-agent-name').value || 'Console User';
+
+      const wsUrl = `${MESH_URL}/ws?agent=${encodeURIComponent(agentId)}&name=${encodeURIComponent(agentName)}`;
+
+      try {
+        meshWs = new WebSocket(wsUrl);
+
+        meshWs.onopen = () => {
+          updateMeshStatus('connected');
+          document.getElementById('mesh-connect-btn').textContent = 'Disconnect';
+          addMeshMessage('system', 'Connected to mesh', 'You are now connected to the BlackRoad Mesh');
+
+          // Start heartbeat
+          meshHeartbeat = setInterval(() => {
+            if (meshWs && meshWs.readyState === WebSocket.OPEN) {
+              meshWs.send(JSON.stringify({ type: 'heartbeat', payload: { timestamp: Date.now() } }));
+            }
+          }, 30000);
+        };
+
+        meshWs.onmessage = (event) => {
+          try {
+            const msg = JSON.parse(event.data);
+            handleMeshMessage(msg);
+          } catch (e) {
+            console.error('Failed to parse mesh message:', e);
+          }
+        };
+
+        meshWs.onclose = () => {
+          updateMeshStatus('disconnected');
+          document.getElementById('mesh-connect-btn').textContent = 'Connect';
+          if (meshHeartbeat) clearInterval(meshHeartbeat);
+          addMeshMessage('system', 'Disconnected from mesh', 'Connection closed');
+        };
+
+        meshWs.onerror = (error) => {
+          console.error('Mesh WebSocket error:', error);
+          updateMeshStatus('error');
+        };
+      } catch (e) {
+        console.error('Failed to connect to mesh:', e);
+        updateMeshStatus('error');
+      }
+    }
+
+    function disconnectMesh() {
+      if (meshWs) {
+        meshWs.close();
+        meshWs = null;
+      }
+      if (meshHeartbeat) {
+        clearInterval(meshHeartbeat);
+        meshHeartbeat = null;
+      }
+    }
+
+    function updateMeshStatus(status) {
+      const dot = document.getElementById('mesh-dot');
+      const text = document.getElementById('mesh-status-text');
+
+      const statuses = {
+        connected: { color: 'var(--success)', text: 'Connected' },
+        disconnected: { color: 'var(--muted)', text: 'Disconnected' },
+        error: { color: 'var(--error)', text: 'Connection Error' }
+      };
+
+      const s = statuses[status] || statuses.disconnected;
+      dot.style.background = s.color;
+      text.textContent = s.text;
+    }
+
+    function handleMeshMessage(msg) {
+      switch (msg.type) {
+        case 'presence':
+          updatePresenceList(msg.payload.agents || []);
+          break;
+        case 'join':
+          addMeshMessage('join', msg.from, `${msg.payload.name || msg.from} joined the mesh`);
+          refreshPresence();
+          break;
+        case 'leave':
+          addMeshMessage('leave', msg.from, `${msg.payload.name || msg.from} left the mesh`);
+          refreshPresence();
+          break;
+        case 'broadcast':
+          addMeshMessage('broadcast', msg.from, msg.payload);
+          break;
+        case 'direct':
+          addMeshMessage('direct', msg.from, msg.payload);
+          break;
+        case 'intent':
+          addMeshMessage('intent', msg.from, `Declared intent: ${JSON.stringify(msg.payload)}`);
+          break;
+        case 'attestation':
+          addMeshMessage('attestation', msg.from, `Attestation: ${JSON.stringify(msg.payload)}`);
+          break;
+        case 'sync':
+          if (msg.payload.presence) {
+            updatePresenceList(msg.payload.presence);
+          }
+          break;
+        case 'heartbeat':
+          // Silent heartbeat acknowledgment
+          break;
+        default:
+          console.log('Unknown mesh message type:', msg.type);
+      }
+    }
+
+    function addMeshMessage(type, from, content) {
+      const icons = {
+        system: '🌐',
+        join: '➡️',
+        leave: '⬅️',
+        broadcast: '📢',
+        direct: '💬',
+        intent: '🎯',
+        attestation: '✅'
+      };
+
+      const colors = {
+        system: 'var(--info)',
+        join: 'var(--success)',
+        leave: 'var(--warning)',
+        broadcast: 'var(--accent)',
+        direct: 'var(--accent4)',
+        intent: 'var(--info)',
+        attestation: 'var(--accent)'
+      };
+
+      meshMessages.unshift({ type, from, content, timestamp: new Date() });
+      if (meshMessages.length > 100) meshMessages.pop();
+
+      renderMeshFeed();
+    }
+
+    function renderMeshFeed() {
+      const feed = document.getElementById('mesh-feed');
+      if (meshMessages.length === 0) {
+        feed.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 2rem;">Connect to see live mesh activity</div>';
+        return;
+      }
+
+      const colors = {
+        system: 'var(--info)',
+        join: 'var(--success)',
+        leave: 'var(--warning)',
+        broadcast: 'var(--accent)',
+        direct: 'var(--accent4)',
+        intent: 'var(--info)',
+        attestation: 'var(--accent)'
+      };
+
+      const icons = {
+        system: '🌐',
+        join: '➡️',
+        leave: '⬅️',
+        broadcast: '📢',
+        direct: '💬',
+        intent: '🎯',
+        attestation: '✅'
+      };
+
+      feed.innerHTML = meshMessages.slice(0, 50).map(m => `
+        <div class="ledger-entry">
+          <div class="ledger-entry-icon" style="background: ${colors[m.type]}20;">${icons[m.type] || '📝'}</div>
+          <div class="ledger-entry-content">
+            <div class="ledger-entry-actor" style="color: ${colors[m.type]};">${m.from}</div>
+            <div class="ledger-entry-action">${typeof m.content === 'object' ? JSON.stringify(m.content) : m.content}</div>
+            <div class="ledger-entry-time">${formatTime(m.timestamp)}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updatePresenceList(agents) {
+      const list = document.getElementById('mesh-presence-list');
+      const count = document.getElementById('online-count');
+      const meshCount = document.getElementById('mesh-count');
+
+      count.textContent = agents.length;
+      meshCount.textContent = agents.length;
+
+      if (agents.length === 0) {
+        list.innerHTML = '<div style="color: var(--muted); text-align: center; padding: 2rem;">No agents online</div>';
+        return;
+      }
+
+      list.innerHTML = agents.map(a => `
+        <div class="agent-row" onclick="directMessage('${a.agentId}')">
+          <div class="agent-avatar">🤖</div>
+          <div class="agent-details">
+            <div class="agent-row-name">${a.name || 'Anonymous'}</div>
+            <div class="agent-row-identity">${a.agentId.substring(0, 20)}...</div>
+          </div>
+          <div class="agent-row-status status-active">online</div>
+        </div>
+      `).join('');
+    }
+
+    async function refreshPresence() {
+      try {
+        const res = await fetch(`${MESH_HTTP}/presence`);
+        const data = await res.json();
+        updatePresenceList(data.agents || []);
+      } catch (e) {
+        console.error('Failed to fetch presence:', e);
+      }
+    }
+
+    function sendBroadcast() {
+      if (!meshWs || meshWs.readyState !== WebSocket.OPEN) {
+        alert('Not connected to mesh!');
+        return;
+      }
+
+      const input = document.getElementById('broadcast-input');
+      const message = input.value.trim();
+      if (!message) return;
+
+      meshWs.send(JSON.stringify({
+        type: 'broadcast',
+        payload: message
+      }));
+
+      input.value = '';
+      addMeshMessage('broadcast', 'You', message);
+    }
+
+    function directMessage(agentId) {
+      const message = prompt(`Send direct message to ${agentId}:`);
+      if (!message) return;
+
+      if (!meshWs || meshWs.readyState !== WebSocket.OPEN) {
+        alert('Not connected to mesh!');
+        return;
+      }
+
+      meshWs.send(JSON.stringify({
+        type: 'direct',
+        to: agentId,
+        payload: message
+      }));
+
+      addMeshMessage('direct', `You → ${agentId.substring(0, 10)}...`, message);
+    }
+
+    // Add mesh to view titles
+    const meshTitles = {
+      dashboard: 'Dashboard',
+      agents: 'Agent Mesh',
+      orgs: 'Organizations',
+      intents: 'Declared Intents',
+      policies: 'Governance Policies',
+      claims: 'Claims & Attestations',
+      delegations: 'Delegations',
+      ledger: 'Immutable Ledger',
+      agency: 'Agency Check',
+      mesh: 'Live Mesh'
+    };
+
+    // Override showView to include mesh
+    const originalShowView = showView;
+    showView = function(view) {
+      document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+      document.getElementById(`view-${view}`).classList.add('active');
+      document.querySelector(`[onclick="showView('${view}')"]`)?.classList.add('active');
+      document.getElementById('view-title').textContent = meshTitles[view] || view;
+
+      // Load view-specific data
+      if (view === 'agents') loadAgents();
+      if (view === 'intents') loadIntents();
+      if (view === 'ledger') loadLedger();
+      if (view === 'agency') loadAgencyStats();
+      if (view === 'claims') loadClaims();
+      if (view === 'policies') loadPolicies();
+      if (view === 'orgs') loadOrgs();
+      if (view === 'delegations') loadDelegations();
+      if (view === 'mesh') refreshPresence();
+    };
+
+    // Handle Enter key for broadcast
+    document.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && e.target.id === 'broadcast-input') {
+        sendBroadcast();
+      }
+    });
+  </script>
+</body>
+</html>
