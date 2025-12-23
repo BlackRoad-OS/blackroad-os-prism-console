@@ -98,17 +98,17 @@ jobs:
               echo "Invalid railway.json detected"
               # Create basic valid config
               cat > railway.json << 'RAILWAYCONFIG'
-{
-  "$schema": "https://railway.app/railway.schema.json",
-  "build": {
-    "builder": "NIXPACKS"
-  },
-  "deploy": {
-    "restartPolicyType": "ON_FAILURE",
-    "restartPolicyMaxRetries": 10
-  }
-}
-RAILWAYCONFIG
+              {
+                "$schema": "https://railway.app/railway.schema.json",
+                "build": {
+                  "builder": "NIXPACKS"
+                },
+                "deploy": {
+                  "restartPolicyType": "ON_FAILURE",
+                  "restartPolicyMaxRetries": 10
+                }
+              }
+              RAILWAYCONFIG
               git config user.name "BlackRoad Auto-Fix Bot"
               git config user.email "bot@blackroad.systems"
               git add railway.json
@@ -134,9 +134,9 @@ RAILWAYCONFIG
           if [ -f "package.json" ]; then
             node -e "
               const pkg = require('./package.json');
-              if (!pkg.scripts) pkg.scripts = {};
-              if (!pkg.scripts.build) pkg.scripts.build = 'echo No build needed';
-              if (!pkg.scripts.start) pkg.scripts.start = 'echo No start command';
+              if (!pkg.scripts) { pkg.scripts = {}; }
+              if (!pkg.scripts.build) { pkg.scripts.build = 'echo No build needed'; }
+              if (!pkg.scripts.start) { pkg.scripts.start = 'echo No start command'; }
               require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));
             "
           fi
