@@ -1,3 +1,4 @@
+import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { EnvCard } from '@/components/EnvCard';
 import type { Env } from '@/types';

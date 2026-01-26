@@ -2,16 +2,17 @@ import './globals.css';
 import type { Metadata } from 'next';
 import { ReactNode } from 'react';
 import Link from 'next/link';
+import type { Route } from 'next';
 
 export const metadata: Metadata = {
   title: 'Prism Console',
   description: 'BlackRoad OS admin console – Gen-0 scaffold'
 };
 
-function NavLink({ href, children }: { href: string; children: ReactNode }) {
+function NavLink({ href, children }: { href: Route | string; children: ReactNode }) {
   return (
     <Link
-      href={href}
+      href={href as Route}
       className="text-gray-400 hover:text-white transition-colors text-sm"
     >
       {children}
