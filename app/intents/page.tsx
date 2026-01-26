@@ -96,7 +96,7 @@ export default function IntentsPage() {
           Track declared intentions across the BlackRoad mesh
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          "Opacity is violence. Transparency is trust."
+          &quot;Opacity is violence. Transparency is trust.&quot;
         </p>
       </section>
 
