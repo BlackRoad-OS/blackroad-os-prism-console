@@ -100,7 +100,7 @@ export default function LedgerPage() {
           Immutable event log with PS-SHA∞ hash chain
         </p>
         <p className="text-sm text-gray-500 mt-2">
-          "The record is sacred."
+          &ldquo;The record is sacred.&rdquo;
         </p>
       </section>
 

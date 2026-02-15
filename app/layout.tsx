@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
-      href={href}
+      href={href as any}
       className="text-gray-400 hover:text-white transition-colors text-sm"
     >
       {children}
