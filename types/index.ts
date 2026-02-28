@@ -23,3 +23,15 @@ export interface DeploySummary {
   lastDeploy: string;
   artifact: string;
 }
+
+export type ProductCategory = 'console' | 'platform' | 'drive' | 'addon';
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  interval: 'month' | 'year';
+  category: ProductCategory;
+  features: string[];
+}
