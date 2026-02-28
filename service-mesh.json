@@ -1,6 +1,6 @@
 {
   "service": "blackroad-os-prism-console",
-  "org": "BlackRoad-OS",
+  "org": "BlackRoad-OS-Inc",
   "dependencies": [],
   "provides": [
     {
