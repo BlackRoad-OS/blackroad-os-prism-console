@@ -1,26 +1,174 @@
 {
   "repo": "BlackRoad-OS/blackroad-os-prism-console",
+  "mode": "production",
   "products": [
     {
-      "name": "blackroad-os-prism-console - Basic",
+      "id": "prism_basic",
+      "name": "Prism Console – Basic",
+      "description": "Core admin console access with single-environment monitoring",
       "price": 900,
-      "interval": "month"
+      "interval": "month",
+      "category": "console",
+      "features": [
+        "1 environment",
+        "Health dashboard",
+        "Basic agent visibility",
+        "Community support"
+      ]
     },
     {
-      "name": "blackroad-os-prism-console - Pro",
+      "id": "prism_pro",
+      "name": "Prism Console – Pro",
+      "description": "Multi-environment console with full agent management and ledger access",
       "price": 2900,
-      "interval": "month"
+      "interval": "month",
+      "category": "console",
+      "features": [
+        "Up to 5 environments",
+        "Agent management",
+        "Intent tracking",
+        "Ledger audit log",
+        "Priority support"
+      ]
     },
     {
-      "name": "blackroad-os-prism-console - Enterprise",
+      "id": "prism_enterprise",
+      "name": "Prism Console – Enterprise",
+      "description": "Unlimited environments, SSO, and dedicated operator support",
       "price": 9900,
-      "interval": "month"
+      "interval": "month",
+      "category": "console",
+      "features": [
+        "Unlimited environments",
+        "SSO / SAML",
+        "Custom integrations",
+        "Dedicated operator support",
+        "SLA guarantees"
+      ]
+    },
+    {
+      "id": "platform_starter",
+      "name": "BlackRoad OS – Starter",
+      "description": "Entry-level access to the BlackRoad OS platform and operator tooling",
+      "price": 4900,
+      "interval": "month",
+      "category": "platform",
+      "features": [
+        "Operator API access",
+        "Up to 3 agents",
+        "1 GB drive storage",
+        "Basic service mesh"
+      ]
+    },
+    {
+      "id": "platform_growth",
+      "name": "BlackRoad OS – Growth",
+      "description": "Expanded platform capacity with advanced agent orchestration",
+      "price": 14900,
+      "interval": "month",
+      "category": "platform",
+      "features": [
+        "Full Operator API",
+        "Up to 25 agents",
+        "50 GB drive storage",
+        "Service mesh with routing",
+        "Webhook integrations"
+      ]
+    },
+    {
+      "id": "platform_scale",
+      "name": "BlackRoad OS – Scale",
+      "description": "Production-grade platform with unlimited agents and enterprise drive",
+      "price": 49900,
+      "interval": "month",
+      "category": "platform",
+      "features": [
+        "Unlimited agents",
+        "500 GB drive storage",
+        "Multi-region deployment",
+        "Advanced observability",
+        "Dedicated infrastructure",
+        "24/7 operator support"
+      ]
+    },
+    {
+      "id": "drive_100gb",
+      "name": "BlackRoad Drive – 100 GB",
+      "description": "Additional encrypted drive storage for files, artifacts, and agent memory",
+      "price": 1500,
+      "interval": "month",
+      "category": "drive",
+      "features": [
+        "100 GB encrypted storage",
+        "Versioned file history",
+        "Agent-accessible via API"
+      ]
+    },
+    {
+      "id": "drive_1tb",
+      "name": "BlackRoad Drive – 1 TB",
+      "description": "High-capacity drive for large-scale file management and archival",
+      "price": 9900,
+      "interval": "month",
+      "category": "drive",
+      "features": [
+        "1 TB encrypted storage",
+        "Versioned file history",
+        "Agent-accessible via API",
+        "Bulk import/export"
+      ]
+    },
+    {
+      "id": "drive_10tb",
+      "name": "BlackRoad Drive – 10 TB",
+      "description": "Enterprise drive tier for organizations managing 100k+ files",
+      "price": 79900,
+      "interval": "month",
+      "category": "drive",
+      "features": [
+        "10 TB encrypted storage",
+        "Versioned file history",
+        "Agent-accessible via API",
+        "Bulk import/export",
+        "Dedicated throughput",
+        "Priority replication"
+      ]
+    },
+    {
+      "id": "operator_seat",
+      "name": "Operator Seat",
+      "description": "Additional operator seat for team members accessing the console",
+      "price": 1900,
+      "interval": "month",
+      "category": "addon",
+      "features": [
+        "Full console access",
+        "Role-based permissions",
+        "Audit trail"
+      ]
+    },
+    {
+      "id": "agent_pack_10",
+      "name": "Agent Pack – 10",
+      "description": "Bundle of 10 additional managed agent slots",
+      "price": 2900,
+      "interval": "month",
+      "category": "addon",
+      "features": [
+        "10 agent slots",
+        "Trust scoring",
+        "Intent routing"
+      ]
     }
   ],
   "webhooks": [
     "checkout.session.completed",
     "customer.subscription.created",
     "customer.subscription.updated",
-    "invoice.paid"
+    "customer.subscription.deleted",
+    "invoice.paid",
+    "invoice.payment_failed",
+    "payment_intent.succeeded",
+    "payment_intent.payment_failed"
   ]
 }
