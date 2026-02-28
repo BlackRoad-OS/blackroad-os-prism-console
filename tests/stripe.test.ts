@@ -1,4 +1,4 @@
-import { products, getProductsByCategory } from '@/lib/stripe';
+import { products, getProductsByCategory, isValidCategory } from '@/lib/stripe';
 
 describe('lib/stripe', () => {
   it('exports a non-empty product catalog', () => {
@@ -25,8 +25,8 @@ describe('lib/stripe', () => {
   });
 
   it('includes console products', () => {
-    const console = getProductsByCategory('console');
-    expect(console.length).toBe(3);
+    const consoleProducts = getProductsByCategory('console');
+    expect(consoleProducts.length).toBe(3);
   });
 
   it('includes platform products', () => {
@@ -39,7 +39,15 @@ describe('lib/stripe', () => {
     expect(addons.length).toBeGreaterThanOrEqual(2);
   });
 
-  it('returns empty array for unknown category', () => {
-    expect(getProductsByCategory('nonexistent')).toEqual([]);
+  it('validates known categories', () => {
+    expect(isValidCategory('console')).toBe(true);
+    expect(isValidCategory('platform')).toBe(true);
+    expect(isValidCategory('drive')).toBe(true);
+    expect(isValidCategory('addon')).toBe(true);
+  });
+
+  it('rejects unknown categories', () => {
+    expect(isValidCategory('nonexistent')).toBe(false);
+    expect(isValidCategory('')).toBe(false);
   });
 });

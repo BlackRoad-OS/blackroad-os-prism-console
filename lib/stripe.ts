@@ -1,5 +1,13 @@
-import type { Product } from '@/types';
+import type { Product, ProductCategory } from '@/types';
 import catalog from '@/stripe-config.json';
+
+/** The set of valid product categories. */
+export const PRODUCT_CATEGORIES: readonly ProductCategory[] = [
+  'console',
+  'platform',
+  'drive',
+  'addon'
+] as const;
 
 /**
  * Server-side Stripe environment configuration.
@@ -33,7 +41,12 @@ export const stripePriceIds: Record<string, string> = {
 /** Full product catalog loaded from stripe-config.json. */
 export const products: Product[] = catalog.products as Product[];
 
+/** Check whether a string is a valid ProductCategory. */
+export function isValidCategory(value: string): value is ProductCategory {
+  return (PRODUCT_CATEGORIES as readonly string[]).includes(value);
+}
+
 /** Retrieve products filtered by category. */
-export function getProductsByCategory(category: string): Product[] {
+export function getProductsByCategory(category: ProductCategory): Product[] {
   return products.filter((p) => p.category === category);
 }
