@@ -9,7 +9,7 @@ export default async function CodexPage() {
         <p className="text-sm text-gray-400">{codex.repo}</p>
         <h1 className="text-2xl font-semibold">{codex.agent_class} Codex</h1>
         <p className="mt-2 text-sm text-gray-300">{codex.purpose}</p>
-        <div className="mt-4 rounded-lg bg-black/20 p-4 text-sm leading-relaxed text-gray-200">
+        <div className="mt-4 rounded-lg bg-black/20 p-4 text-sm leading-relaxed text-gray-200 whitespace-pre-wrap">
           {codex.prompt}
         </div>
       </header>
