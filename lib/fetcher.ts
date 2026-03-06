@@ -35,6 +35,11 @@ const mockDeploys: DeploySummary[] = [
     envId: 'env-stg',
     lastDeploy: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
     artifact: 'console:0.0.1-rc1'
+  },
+  {
+    envId: 'env-prd',
+    lastDeploy: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
+    artifact: 'console:0.0.1'
   }
 ];
 
