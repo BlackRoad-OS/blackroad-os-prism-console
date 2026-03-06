@@ -34,6 +34,13 @@ Part of the **BlackRoad-OS** organization:
 - Node.js >= 20
 - pnpm >= 9.12.0
 
+### Working with `blackroad-os-core`
+
+The Prism Console surfaces data modeled in [`blackroad-os-core`](https://github.com/BlackRoad-OS/blackroad-os-core). Keep that
+repository nearby when developing features that display domain models (agents, packs, infrastructure) so you can align field
+names and validation rules. When adding a new view, reference the core repo's schemas first, then mirror those contracts in the
+console fetchers and UI state.
+
 ### Installation
 ### Operator doctrine
 - **Prism Console Master Prompt**: See `system/prompts/prism_master_prompt.md` for the V0.1.64 64-state visualization spec.
