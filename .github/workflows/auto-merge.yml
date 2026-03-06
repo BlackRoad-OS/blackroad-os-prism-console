@@ -5,11 +5,9 @@ name: Auto-Approve and Merge
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, labeled]
-  check_suite:
-    types: [completed]
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
   workflow_run:
-    workflows: ["CI", "Auto Deploy"]
+    workflows: ["CI", "Auto Deploy", "Build", "Test"]
     types: [completed]
 
 permissions:
@@ -20,50 +18,55 @@ jobs:
   auto-merge:
     runs-on: ubuntu-latest
 
-    # Trusted actors - auto-merge their PRs
+    # Trusted actors - auto-merge their PRs (on PR events)
+    # Also runs when CI completes on workflow_run events
     if: |
-      github.actor == 'blackboxprogramming' ||
-      github.actor == 'codex-bot' ||
-      github.actor == 'dependabot[bot]' ||
-      github.actor == 'github-actions[bot]' ||
-      github.actor == 'claude-code[bot]' ||
-      contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      github.event_name == 'workflow_run' ||
+      github.event.pull_request.draft == false && (
+        github.actor == 'blackboxprogramming' ||
+        github.actor == 'codex-bot' ||
+        github.actor == 'dependabot[bot]' ||
+        github.actor == 'github-actions[bot]' ||
+        github.actor == 'claude-code[bot]' ||
+        github.actor == 'Copilot' ||
+        contains(github.event.pull_request.labels.*.name, 'auto-merge')
+      )
 
     steps:
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
-      - name: Wait for checks to complete
-        uses: fountainhead/action-wait-for-check@5a908a24814494009c4bb27c242ea38c93c593be
-        id: wait-for-checks
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          checkName: detect-and-deploy
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
-          timeoutSeconds: 600
-          intervalSeconds: 15
-        continue-on-error: true
-
-      - name: Auto-approve PR
-        if: steps.wait-for-checks.outputs.conclusion == 'success' || steps.wait-for-checks.outcome == 'failure'
-        uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Enable auto-merge
-        if: steps.wait-for-checks.outputs.conclusion == 'success' || steps.wait-for-checks.outcome == 'failure'
-        run: gh pr merge --auto --squash "${{ github.event.pull_request.number }}"
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Comment on failure
-        if: steps.wait-for-checks.outputs.conclusion == 'failure'
+      - name: Resolve PR number
+        id: pr
         uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
-            github.rest.issues.createComment({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: context.payload.pull_request.number,
-              body: '⚠️ **Checks failed** - Review required before merge.'
-            });
+            let prNumber = context.payload.pull_request?.number;
+            if (!prNumber && context.payload.workflow_run) {
+              // Find the PR associated with this workflow run
+              const headSha = context.payload.workflow_run.head_sha;
+              const prs = await github.rest.pulls.list({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                state: 'open',
+                per_page: 100
+              });
+              const pr = prs.data.find(p => p.head.sha === headSha);
+              if (pr) prNumber = pr.number;
+            }
+            core.setOutput('number', prNumber || '');
+            core.setOutput('found', prNumber ? 'true' : 'false');
+
+      - name: Auto-approve PR
+        if: steps.pr.outputs.found == 'true'
+        uses: hmarr/auto-approve-action@f0939ea97e9205ef24d872e76833fa908a770363
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          pull-request-number: ${{ steps.pr.outputs.number }}
+
+      - name: Enable auto-merge
+        if: steps.pr.outputs.found == 'true'
+        run: gh pr merge --auto --squash "${{ steps.pr.outputs.number }}"
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
