@@ -26,7 +26,7 @@ export interface DeploySummary {
 
 export interface CodexPrompt {
   repo: string;
-  agent_class: string;
+  agentClass: string;
   purpose: string;
   prompt: string;
   inputs: string[];
