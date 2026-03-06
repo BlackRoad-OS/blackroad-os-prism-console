@@ -1,0 +1,100 @@
+name: "🚨 URGENT – Cross-Repo Indexing"
+description: "P0 urgent task: index all BlackRoad-OS-Inc repos and deploy production workflows immediately"
+title: "[URGENT] Cross-Repo Indexing & Workflow Deploy – BlackRoad-OS-Inc"
+labels: ["prio:P0", "type:infra", "status:ready", "agent-task", "automated"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ## 🚨 URGENT – Cross-Repo Indexing Required
+        
+        This task requires **immediate action** to index all repos in the `BlackRoad-OS-Inc` organization
+        and deploy production workflows (CI/CD, Stripe, Clerk, E2E) across the full BlackRoad.io ecosystem.
+        
+        **Target Org:** `BlackRoad-OS-Inc`  
+        **Priority:** P0 – Do it now
+
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope
+      description: What repos need to be indexed and have workflows deployed?
+      value: |
+        All repos under `BlackRoad-OS-Inc` organization, including:
+        - blackroad-os-core
+        - blackroad-os-api
+        - blackroad-os-operator
+        - blackroad-os-prism-console
+        - blackroad-os-web
+        - blackroad-os-docs
+        - blackroad-cli
+        - blackroad-agents
+        - blackroad-os-mesh
+        - blackroad-os-helper
+        All pack repos: blackroad-os-pack-*
+    validations:
+      required: true
+
+  - type: textarea
+    id: workflows
+    attributes:
+      label: Workflows to deploy
+      description: Which workflows must be deployed to all repos?
+      value: |
+        - autonomous-orchestrator.yml (CI/CD, auto-merge, auto-fix)
+        - autonomous-self-healer.yml (self-healing, health monitoring)
+        - console-deploy.yaml (Railway production deploy)
+        - ci-cd.yml (build, test, deploy pipeline)
+        - Stripe webhook handler (checkout.session.completed, invoice.paid)
+        - Clerk auth middleware (protectedRoutes, publicRoutes)
+        Trigger via: `.github/workflows/autonomous-cross-repo.yml` with `sync_type=all` and `target_repos=all`
+    validations:
+      required: true
+
+  - type: textarea
+    id: stripe-clerk
+    attributes:
+      label: Stripe + Clerk E2E requirements
+      description: What must be configured for Stripe and Clerk?
+      value: |
+        **Stripe (stripe-config.json):**
+        - Products: Basic ($9/mo), Pro ($29/mo), Enterprise ($99/mo)
+        - Webhooks: checkout.session.completed, customer.subscription.created/updated, invoice.paid
+        - All webhook secrets must be set in repo secrets: STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET
+        
+        **Clerk (clerk-config.json):**
+        - Auth endpoints: /api/auth/signin, /api/auth/signup, /api/auth/signout
+        - Protected routes: /dashboard/*, /admin/*, /api/private/*
+        - Secrets required: CLERK_SECRET_KEY, NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY
+        
+        **E2E:**
+        - All requests must route to BlackRoad-OS-Inc organization
+        - Service mesh discovery: https://api.blackroad.io/registry
+    validations:
+      required: false
+
+  - type: textarea
+    id: done
+    attributes:
+      label: Definition of done
+      description: How do we know this is complete?
+      value: |
+        - [ ] All `BlackRoad-OS-Inc` repos have autonomous-orchestrator.yml deployed
+        - [ ] All repos have CI/CD pipeline passing
+        - [ ] Stripe webhooks active in production for all product repos
+        - [ ] Clerk auth middleware deployed to all protected routes
+        - [ ] service-mesh.json org = "BlackRoad-OS-Inc" in all repos
+        - [ ] Cross-repo coordinator confirms sync complete via broadcast endpoint
+    validations:
+      required: true
+
+  - type: dropdown
+    id: assignee
+    attributes:
+      label: Assigned to
+      options:
+        - "Codex / Agent (autonomous)"
+        - "Human – needs manual repo access"
+        - "Both – parallel execution"
+    validations:
+      required: true

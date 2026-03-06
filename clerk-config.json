@@ -1,5 +1,5 @@
 {
-  "repo": "BlackRoad-OS/blackroad-os-prism-console",
+  "repo": "BlackRoad-OS-Inc/blackroad-os-prism-console",
   "authEndpoints": [
     "/api/auth/signin",
     "/api/auth/signup",
