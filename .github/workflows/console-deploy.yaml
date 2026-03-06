@@ -48,12 +48,12 @@ jobs:
             fi
           fi
 
+      - name: Install Railway CLI
+        run: npm install -g @railway/cli
       - name: Deploy to Railway
-        uses: railwayapp/railway-action@v2
-        with:
-          railwayToken: ${{ secrets.RAILWAY_TOKEN }}
-          service: prism-console-web
-          environment: ${{ steps.env.outputs.railway_env }}
+        run: railway up --service prism-console-web --environment ${{ steps.env.outputs.railway_env }}
+        env:
+          RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
       - name: Health check
         run: |

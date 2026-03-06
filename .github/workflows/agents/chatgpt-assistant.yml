@@ -43,11 +43,11 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
       - name: Parse request
         id: parse
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const comment = context.payload.comment.body;
@@ -75,7 +75,7 @@ jobs:
 
       - name: Generate response
         id: response
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const requestType = '${{ steps.parse.outputs.request_type }}';
@@ -141,7 +141,7 @@ jobs:
 
     steps:
       - name: Welcome and guide
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const issue = context.payload.issue;
@@ -186,7 +186,7 @@ jobs:
 
     steps:
       - name: Facilitate brainstorm
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const comment = context.payload.comment.body;
@@ -235,10 +235,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
 
       - name: Provide learning resources
-        uses: actions/github-script@v7
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea
         with:
           script: |
             const comment = context.payload.comment.body;
