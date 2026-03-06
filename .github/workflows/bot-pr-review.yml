@@ -80,12 +80,12 @@ jobs:
                 event: 'COMMENT',
                 body: `🤖 **Bot Review Notice:**
 
-⚠️ This PR has a short description. Please add:
-- What does this PR do?
-- Why is this change needed?
-- How was it tested?
+            ⚠️ This PR has a short description. Please add:
+            - What does this PR do?
+            - Why is this change needed?
+            - How was it tested?
 
-A detailed description helps reviewers understand your changes.`
+            A detailed description helps reviewers understand your changes.`
               });
             }
 
@@ -144,9 +144,9 @@ A detailed description helps reviewers understand your changes.`
                 event: 'COMMENT',
                 body: `🤖 **Bot Code Review:**
 
-${insights.join('\n\n')}
+            ${insights.join('\n\n')}
 
-This is an automated review. A human will review your changes soon.`
+            This is an automated review. A human will review your changes soon.`
               });
             } else {
               await github.rest.pulls.createReview({
@@ -156,11 +156,11 @@ This is an automated review. A human will review your changes soon.`
                 event: 'COMMENT',
                 body: `🤖 **Bot Code Review:**
 
-✅ No issues detected in automated review
-✅ Code changes look good
-✅ Ready for human review
+            ✅ No issues detected in automated review
+            ✅ Code changes look good
+            ✅ Ready for human review
 
-This is an automated review.`
+            This is an automated review.`
               });
             }
 

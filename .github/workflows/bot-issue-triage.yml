@@ -66,12 +66,12 @@ jobs:
             // Add triage comment
             const comment = `👋 Thanks for opening this issue!
 
-🤖 **Bot Triage:**
-- Auto-labeled as: ${labels.join(', ')}
-- Assigned priority based on content
-- A team member will review soon
+            🤖 **Bot Triage:**
+            - Auto-labeled as: ${labels.join(', ')}
+            - Assigned priority based on content
+            - A team member will review soon
 
-This is an automated message from the BlackRoad bot system.`;
+            This is an automated message from the BlackRoad bot system.`;
 
             await github.rest.issues.createComment({
               owner: context.repo.owner,
@@ -109,9 +109,9 @@ This is an automated message from the BlackRoad bot system.`;
                 issue_number: issue.number,
                 body: `🤖 **Possible Duplicates Detected:**
 
-${duplicateList}
+            ${duplicateList}
 
-Please check if any of these issues match your report.`
+            Please check if any of these issues match your report.`
               });
             }
 
