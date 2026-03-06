@@ -16,7 +16,7 @@ jobs:
   dependency-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       
       - name: 📦 Check for dependency updates
         id: deps
@@ -75,7 +75,7 @@ jobs:
           go test ./... || true
       
       - name: 📝 Create PR for dependency updates
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "🤖 Auto-update dependencies"
@@ -102,7 +102,7 @@ jobs:
   code-quality-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       
       - name: 🔍 Analyze code quality
         id: quality
@@ -147,7 +147,7 @@ jobs:
       
       - name: 📝 Create code quality PR
         if: steps.quality.outputs.needs_improvement == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "🤖 Auto-improve code quality"
@@ -174,7 +174,7 @@ jobs:
   security-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       
       - name: 🔒 Security audit
         id: security
@@ -196,7 +196,7 @@ jobs:
       
       - name: 📝 Create security PR
         if: steps.security.outputs.has_npm_fixes == 'true' || steps.security.outputs.has_python_fixes == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "🔒 Auto-fix security vulnerabilities"
@@ -221,7 +221,7 @@ jobs:
   documentation-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       
       - name: 📚 Generate documentation
         id: docs
@@ -259,7 +259,7 @@ EOFREADME
       
       - name: 📝 Create documentation PR
         if: steps.docs.outputs.needs_readme == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "📚 Auto-generate documentation"
@@ -281,7 +281,7 @@ EOFREADME
   performance-auto-pr:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332
       
       - name: ⚡ Performance optimization
         id: perf
@@ -314,7 +314,7 @@ EOFIGNORE
       
       - name: 📝 Create performance PR
         if: steps.perf.outputs.added_gitignore == 'true'
-        uses: peter-evans/create-pull-request@v5
+        uses: peter-evans/create-pull-request@4e1beaa7521e8b457b572c090b25bd3db56bf1c5
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           commit-message: "⚡ Auto-optimize repository"
