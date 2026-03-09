@@ -87,6 +87,47 @@ The ultimate command reference - organized by category:
 
 ---
 
+## React UI Templates (Brand-Kit)
+
+These React (TSX) component templates implement the canonical BlackRoad brand design system with the correct color palette, typography, and dark theme. They are sourced from [blackroad-brand-kit#24](https://github.com/BlackRoad-OS-Inc/blackroad-brand-kit/issues/24).
+
+**Brand constants used across all templates:**
+- Accent colors: `#FF6B2B` (Ember) → `#00D4FF` (Arc)
+- Background: `#0e0e0e` · Borders: `#1a1a1a`
+- Fonts: Space Grotesk (headings), Inter (body), JetBrains Mono (code/mono)
+
+### 6. Brand Colors
+**File**: `brand-colors.tsx`
+
+Interactive color palette reference showing all six accent tokens and the neutral gray scale. Click any swatch to copy the hex value. Includes a CSS custom properties reference block.
+
+### 7. Homepage
+**File**: `homepage.tsx`
+
+Marketing landing page featuring the gradient hero, portal ecosystem grid, stats bar, and core principles section. Includes hover interaction on each portal card.
+
+### 8. Pricing Page
+**File**: `pricing-page.tsx`
+
+Full pricing page with four plans (Open, Builder, Studio, Enterprise), a feature comparison table, and an accordion FAQ section. Highlights the Builder plan with a gradient accent.
+
+### 9. OS Console
+**File**: `os-console.tsx`
+
+Real-time operating system console with three tabs: **Agents** (name, role, memory, uptime, load bars), **Services** (latency, uptime, status badges), and **Events** (audit log).
+
+### 10. Docs Page
+**File**: `docs-page.tsx`
+
+Full documentation site shell with a collapsible sidebar, search, breadcrumb navigation, previous/next paging, and five implemented content sections: Overview, Quickstart, Architecture, Agents, and Z-Framework.
+
+### 11. About Page
+**File**: `about-page.tsx`
+
+About / team page presenting the eight core agents with role cards (colored top border, uptime & memory stats), a six-value beliefs section, and a year-by-year timeline.
+
+---
+
 ## The Philosophy
 
 ### Why Copy-Paste-Ready?
