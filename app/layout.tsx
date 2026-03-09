@@ -1,5 +1,6 @@
 import './globals.css';
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { ReactNode } from 'react';
 import Link from 'next/link';
 
@@ -11,7 +12,7 @@ export const metadata: Metadata = {
 function NavLink({ href, children }: { href: string; children: ReactNode }) {
   return (
     <Link
-      href={href}
+      href={href as any}
       className="text-gray-400 hover:text-white transition-colors text-sm"
     >
       {children}
@@ -29,8 +30,16 @@ export default function RootLayout({ children }: { children: ReactNode }) {
               <p className="text-xs uppercase tracking-[0.2em] text-muted">BlackRoad OS</p>
               <h1 className="text-2xl font-semibold">Prism Console</h1>
             </div>
-            <div className="card-surface px-4 py-2 text-sm text-gray-200">
-              Edge-ready • shadcn/tailwind • Gen-0
+            <div className="flex items-center gap-3">
+              <Link
+                href="/codex"
+                className="rounded-md border border-white/10 px-3 py-2 text-sm text-gray-200 transition hover:border-white/30"
+              >
+                Codex
+              </Link>
+              <div className="card-surface px-4 py-2 text-sm text-gray-200">
+                Edge-ready • shadcn/tailwind • Gen-0
+              </div>
             </div>
           </header>
 

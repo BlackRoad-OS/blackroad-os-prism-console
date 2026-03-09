@@ -11,7 +11,7 @@ The **blackroad-os-prism-console** repository is the **single-pane-of-glass admi
 The Prism Console is a core infrastructure component within the **BlackRoad-OS** organization, alongside:
 
 **Core Platform:**
-- `blackroad-os-core` - Core platform logic and shared libraries
+- [`blackroad-os-core`](https://github.com/BlackRoad-OS/blackroad-os-core) - Core platform logic and shared libraries
 - `blackroad-os-operator` - Orchestration and automation agent
 - `blackroad-os-api` - Main API backend
 - `blackroad-os-api-gateway` - API gateway and routing
@@ -104,6 +104,7 @@ The Prism Console integrates with:
 - **BlackRoad OS API Gateway** - Core data and operations
 - **Agent Registry** - Agent and pack metadata from `blackroad-os-agents`
 - **Infrastructure APIs** - Railway, Cloudflare, etc.
+- **Core Domain Models** - Reference schemas and contracts in `blackroad-os-core` before exposing new fields in the UI
 
 ## Domain Configuration
 
