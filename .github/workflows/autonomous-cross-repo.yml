@@ -68,15 +68,18 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Default BlackRoad repos that should stay in sync
+          # Default BlackRoad-OS-Inc production repos that should stay in sync
           CORE_REPOS='[
-            "BlackRoad-OS/blackroad-os-web",
-            "BlackRoad-OS/blackroad-os-docs",
-            "BlackRoad-OS/blackroad-cli",
-            "BlackRoad-OS/blackroad-agents",
-            "BlackRoad-OS/blackroad-os-mesh",
-            "BlackRoad-OS/blackroad-os-helper",
-            "BlackRoad-OS/blackroad-os-core"
+            "BlackRoad-OS-Inc/blackroad-os-web",
+            "BlackRoad-OS-Inc/blackroad-os-docs",
+            "BlackRoad-OS-Inc/blackroad-cli",
+            "BlackRoad-OS-Inc/blackroad-agents",
+            "BlackRoad-OS-Inc/blackroad-os-mesh",
+            "BlackRoad-OS-Inc/blackroad-os-helper",
+            "BlackRoad-OS-Inc/blackroad-os-core",
+            "BlackRoad-OS-Inc/blackroad-os-api",
+            "BlackRoad-OS-Inc/blackroad-os-operator",
+            "BlackRoad-OS-Inc/blackroad-os-prism-console"
           ]'
 
           if [ "${{ github.event.inputs.target_repos }}" = "all" ] || [ -z "${{ github.event.inputs.target_repos }}" ]; then
